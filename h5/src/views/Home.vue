@@ -1,0 +1,129 @@
+<template>
+  <div class="home">
+    <div class="center">
+      <img alt="Vue logo" src="../assets/logo.png" />
+    </div>
+
+    <h1>五子棋在线对战</h1>
+
+    <div id="start">
+      <div><input id="input-nickname" type="text" placeholder="请输入昵称" v-model="nickName"/></div>
+      <div><input id="input-password" type="password" placeholder="请输入密码" v-model="password"/></div>
+      <div v-if="logined">
+        <a id="btn-start" @click="start">开始游戏</a>
+      </div>
+      <template v-else>
+        <div>
+          <a id="btn-login" @click="login">登录</a>
+        </div>
+        <div>
+          <a id="btn-register" @click="register">注册</a>
+        </div>
+      </template>
+    </div>
+
+    <p>基于 Vue 和 imi 分别开发前后端。</p>
+    <p>本教程主要着重于后端，所以前端简陋勿怪~</p>
+    <p>
+      视频教程免费连载更新地址：
+      <a href="https://space.bilibili.com/768718" target="_blank">https://space.bilibili.com/768718</a>
+    </p>
+    <h2>技术架构</h2>
+
+    <h3>后端</h3>
+    <p>
+      <a href="https://www.imiphp.com">imi 框架</a> (Http + WebSocket)
+    </p>
+    <p>
+      <a href="https://www.swoole.com">Swoole</a> (imi 框架基于 Swoole 开发)
+    </p>
+
+    <h3>前端</h3>
+    <p>Vue + Less</p>
+  </div>
+</template>
+
+<script>
+// @ is an alias to /src
+import HelloWorld from "@/components/HelloWorld.vue";
+
+export default {
+  name: "home",
+  components: {
+    HelloWorld
+  },
+  data() {
+    return {
+      logined: false,
+      nickName: '',
+      password: '',
+    };
+  },
+  mounted() {
+  },
+  methods: {
+    // 注册
+    register(){
+
+    },
+    // 登录
+    login(){
+
+    },
+    // 开始游戏
+    start() {
+      if('' === this.nickName)
+      {
+        alert('请输入昵称哦！');
+      }
+      // TODO：HTTP 登录
+      
+      this.GLOBAL.nickName = this.nickName;
+      this.$router.push({name:'rooms'});
+    },
+  }
+};
+</script>
+
+<style lang="less" scoped>
+@import "../style/style.less";
+h1 {
+  margin-top: 0;
+}
+h1,
+h2,
+h3 {
+  text-align: center;
+}
+#start:extend(.center) {
+  margin: 36px 0;
+  #input-nickname, #input-password{
+    border-color: #e6e6e6;
+    height: 38px;
+    line-height: 1.3;
+    line-height: 38px\9;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    padding-left: 10px;
+    box-sizing: border-box;
+    width: 250px;
+    max-width: 100%;
+    margin: 0 auto;
+    margin-bottom: 6px;
+  }
+  #btn-login,#btn-register,#btn-start {
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 8px 24px;
+    font-size: 24px;
+    background: #1e9fff;
+    margin-top: 16px;
+    color: #fff;
+  }
+}
+</style>
