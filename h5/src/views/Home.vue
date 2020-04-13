@@ -68,7 +68,8 @@ export default {
     },
     // 登录
     login(){
-
+      // TODO: 登录
+      this.logined = true;
     },
     // 开始游戏
     start() {
