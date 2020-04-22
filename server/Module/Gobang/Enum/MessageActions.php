@@ -7,6 +7,11 @@ use Imi\Enum\Annotation\EnumItem;
 abstract class MessageActions extends BaseEnum
 {
     /**
+     * @EnumItem("房间创建")
+     */
+    const ROOM_CREATE = 'room.create';
+
+    /**
      * @EnumItem("房间列表")
      */
     const ROOM_LIST = 'room.list';
@@ -35,5 +40,15 @@ abstract class MessageActions extends BaseEnum
      * @EnumItem("取消准备")
      */
     const ROOM_CANCEL_READY = 'room.cancelReady';
+
+    /**
+     * @EnumItem("落子结果")
+     */
+    const GOBANG_GO_RESULT = 'gobang.goResult';
+
+    /**
+     * @EnumItem("落子结果通知")
+     */
+    const GOBANG_GO_RESULT_NOTIFY = 'gobang.goResultNotify';
 
 }

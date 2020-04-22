@@ -1,9 +1,10 @@
 <?php
 namespace ImiApp\Module\Gobang\Controller;
 
-use Imi\Aop\Annotation\Inject;
 use Imi\ConnectContext;
+use Imi\Aop\Annotation\Inject;
 use Imi\Controller\WebSocketController;
+use ImiApp\Module\Gobang\Enum\MessageActions;
 use Imi\Server\Route\Annotation\WebSocket\WSRoute;
 use Imi\Server\Route\Annotation\WebSocket\WSAction;
 use Imi\Server\Route\Annotation\WebSocket\WSController;
@@ -52,7 +53,7 @@ class RoomController extends WebSocketController
     {
         $roomId = $this->roomLogic->create(ConnectContext::get('memberId'), $data['title'] ?? null);
         return [
-            'action'    =>  'room.create',
+            'action'    =>  MessageActions::ROOM_CREATE,
             'roomId'    =>  $roomId,
         ];
     }
@@ -70,7 +71,7 @@ class RoomController extends WebSocketController
     {
         $this->roomLogic->join(ConnectContext::get('memberId'), $data['roomId']);
         return [
-            'action'    =>  'room.join',
+            'action'    =>  MessageActions::ROOM_JOIN,
         ];
     }
 
@@ -87,7 +88,7 @@ class RoomController extends WebSocketController
     {
         $this->roomLogic->watch(ConnectContext::get('memberId'), $data['roomId']);
         return [
-            'action'    =>  'room.watch',
+            'action'    =>  MessageActions::ROOM_WATCH,
         ];
     }
 
@@ -104,7 +105,7 @@ class RoomController extends WebSocketController
     {
         $this->roomLogic->leave(ConnectContext::get('memberId'), $data['roomId']);
         return [
-            'action'    =>  'room.leave',
+            'action'    =>  MessageActions::ROOM_LEAVE,
         ];
     }
 
@@ -121,7 +122,7 @@ class RoomController extends WebSocketController
     {
         $this->roomLogic->ready(ConnectContext::get('memberId'), $data['roomId']);
         return [
-            'action'    =>  'room.ready',
+            'action'    =>  MessageActions::ROOM_READY,
         ];
     }
 
@@ -138,7 +139,7 @@ class RoomController extends WebSocketController
     {
         $this->roomLogic->cancelReady(ConnectContext::get('memberId'), $data['roomId']);
         return [
-            'action'    =>  'room.cancelReady',
+            'action'    =>  MessageActions::ROOM_CANCEL_READY,
         ];
     }
 

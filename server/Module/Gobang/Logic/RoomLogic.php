@@ -6,6 +6,7 @@ use Imi\Server\Server;
 use Imi\ConnectContext;
 use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
+use Imi\RequestContext;
 use ImiApp\Exception\BusinessException;
 use ImiApp\Module\Gobang\Model\RoomModel;
 use ImiApp\Module\Gobang\Enum\MessageActions;
@@ -54,6 +55,8 @@ class RoomLogic
         }
         // 创建房间
         $room = $this->roomService->create($memberId, $title);
+        // 创建房间分组
+        RequestContext::getServer()->createGroup('room:' . $room->getRoomId());
         // 加入房间
         $this->join($memberId, $room->getRoomId());
         // 推送房间列表
@@ -102,6 +105,8 @@ class RoomLogic
         $this->roomService->lock($roomId, function() use($memberId, $roomId){
             $this->roomService->join($memberId, $roomId);
         });
+        // 加入房间分组
+        RequestContext::getServer()->joinGroup('room:' . $roomId, RequestContext::get('fd'));
         defer(function() use($roomId){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_JOIN, [
                 'roomInfo'  =>  $this->roomService->getInfo($roomId),
@@ -122,6 +127,8 @@ class RoomLogic
         $this->roomService->lock($roomId, function() use($memberId, $roomId){
             $this->roomService->watch($memberId, $roomId);
         });
+        // 加入房间分组
+        RequestContext::getServer()->joinGroup('room:' . $roomId, RequestContext::get('fd'));
         defer(function() use($roomId){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_WATCH, [
                 'roomInfo'  =>  $this->roomService->getInfo($roomId),
@@ -142,6 +149,8 @@ class RoomLogic
         $this->roomService->lock($roomId, function() use($memberId, $roomId){
             $this->roomService->leave($memberId, $roomId);
         });
+        // 离开房间分组
+        RequestContext::getServer()->leaveGroup('room:' . $roomId, RequestContext::get('fd'));
         defer(function() use($roomId){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_LEAVE, [
                 'roomInfo'  =>  $this->roomService->getInfo($roomId),

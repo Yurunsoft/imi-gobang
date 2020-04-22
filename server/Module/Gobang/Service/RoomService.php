@@ -51,9 +51,9 @@ class RoomService
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function join(int $memberId, int $roomId)
+    public function join(int $memberId, int $roomId): RoomModel
     {
         $room = $this->getInfo($roomId);
         if(0 === $room->getPlayerId1())
@@ -69,6 +69,7 @@ class RoomService
             throw new BusinessException('房间已满');
         }
         $room->save();
+        return $room;
     }
 
     /**
@@ -76,9 +77,9 @@ class RoomService
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function watch(int $memberId, int $roomId)
+    public function watch(int $memberId, int $roomId): RoomModel
     {
 
     }
@@ -88,9 +89,9 @@ class RoomService
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function leave(int $memberId, int $roomId)
+    public function leave(int $memberId, int $roomId): RoomModel
     {
         $room = $this->getInfo($roomId);
         if($memberId === $room->getPlayerId1())
@@ -99,13 +100,14 @@ class RoomService
         }
         else if($memberId === $room->getPlayerId2())
         {
-            $room->setPlayerId2($memberId);
+            $room->setPlayerId2(0);
         }
         else
         {
             throw new BusinessException('玩家已不在房间');
         }
         $room->save();
+        return $room;
     }
 
     /**
@@ -113,9 +115,9 @@ class RoomService
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function ready(int $memberId, int $roomId)
+    public function ready(int $memberId, int $roomId): RoomModel
     {
         $room = $this->getInfo($roomId);
         if($memberId === $room->getPlayerId1())
@@ -131,6 +133,7 @@ class RoomService
             throw new BusinessException('玩家不在房间');
         }
         $room->save();
+        return $room;
     }
 
     /**
@@ -138,9 +141,9 @@ class RoomService
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function cancelReady(int $memberId, int $roomId)
+    public function cancelReady(int $memberId, int $roomId): RoomModel
     {
         $room = $this->getInfo($roomId);
         if($memberId === $room->getPlayerId1())
@@ -156,6 +159,7 @@ class RoomService
             throw new BusinessException('玩家不在房间');
         }
         $room->save();
+        return $room;
     }
 
     /**
@@ -164,7 +168,7 @@ class RoomService
      * @param integer $roomId
      * @param callable $callback
      * @param callable $afterCallback
-     * @return void
+     * @return mixed
      */
     public function lock(int $roomId, callable $callback, $afterCallback = null)
     {
