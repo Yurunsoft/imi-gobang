@@ -1,6 +1,6 @@
 <template>
   <div>
-    <gobang></gobang>
+    <gobang :disable="gobang.disable"></gobang>
   </div>
 </template>
 
@@ -12,6 +12,9 @@ export default {
   },
   data() {
     return {
+      gobang: {
+        disable: false,
+      },
     };
   },
   mounted(){

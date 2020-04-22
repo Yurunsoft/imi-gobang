@@ -40,7 +40,7 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: function () { 
-        return import(/* webpackChunkName: "rooms" */ './views/Gobang.vue')
+        return import(/* webpackChunkName: "gobang" */ './views/Gobang.vue')
       }
     },
   ]

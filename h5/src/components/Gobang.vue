@@ -22,6 +22,11 @@ export default {
       type: String,
       default: '#333',
     },
+    // 是否禁用
+    disable:{
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -153,6 +158,10 @@ export default {
     },
     // canvas 点击
     canvasClick(e){
+      if(this.disable)
+      {
+        return;
+      }
       let x = Math.round((e.offsetX - this.canvasPadding) / this.cellWidth)
       let y = Math.round((e.offsetY - this.canvasPadding) / this.cellHeight)
       console.log(x, y)
@@ -190,4 +199,3 @@ export default {
   }
 }
 </style>
-004 
