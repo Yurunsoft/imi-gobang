@@ -4,7 +4,10 @@
     "description": "imi 框架的 WebSocket Server 项目。https://imiphp.com",
 	"require": {
 		"yurunsoft/imi": "~1.0"
-	},
+    },
+    "require-dev": {
+        "swoole/ide-helper": "^4"
+    },
     "autoload": {
         "psr-4" : {
 			"ImiApp\\" : "./"

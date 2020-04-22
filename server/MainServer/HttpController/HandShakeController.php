@@ -19,7 +19,7 @@ class HandShakeController extends HttpController
      * 
      * @Action
      * @Route("/ws")
-     * @WSConfig(parserClass=\Imi\Server\DataParser\JsonObjectParser::class)
+     * @WSConfig(parserClass=\Imi\Server\DataParser\JsonArrayParser::class)
      * @return void
      */
     public function ws()

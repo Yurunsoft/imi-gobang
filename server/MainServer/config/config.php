@@ -6,8 +6,9 @@ return [
     ],
     // bean扫描目录
     'beanScan'    =>    [
-        'ImiApp\MainServer\Controller',
         'ImiApp\MainServer\HttpController',
+        'ImiApp\Enum',
+        'ImiApp\Module',
     ],
     'beans'    =>    [
         'SessionManager'    =>    [
@@ -40,6 +41,7 @@ return [
         ],
         'WebSocketDispatcher'    =>    [
             'middlewares'    =>    [
+                'ReturnMessageMiddleware',
                 \Imi\Server\WebSocket\Middleware\RouteMiddleware::class,
             ],
         ],

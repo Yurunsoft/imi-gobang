@@ -93,7 +93,7 @@ return [
                 'pool'    =>    [
                     'class'        =>    \Imi\Redis\SyncRedisPool::class,
                     'config'    =>    [
-                        'maxResources'    =>    10,
+                        'maxResources'    =>    16,
                         'minResources'    =>    0,
                     ],
                 ],
@@ -107,7 +107,7 @@ return [
                 'pool'    =>    [
                     'class'        =>    \Imi\Redis\CoroutineRedisPool::class,
                     'config'    =>    [
-                        'maxResources'    =>    10,
+                        'maxResources'    =>    16,
                         'minResources'    =>    0,
                     ],
                 ],
@@ -115,6 +115,40 @@ return [
                     'host'      => '127.0.0.1',
                     'port'      => 6379,
                     'password'  => null,
+                ]
+            ],
+        ],
+        'redisNoSerialize'    =>    [
+            'sync'    =>    [
+                'pool'    =>    [
+                    'class'        =>    \Imi\Redis\SyncRedisPool::class,
+                    'config'    =>    [
+                        'maxResources'    =>    16,
+                        'minResources'    =>    0,
+                    ],
+                ],
+                'resource'    =>    [
+                    'host'      => '127.0.0.1',
+                    'port'      => 6379,
+                    'password'  => null,
+                    // 是否自动序列化变量
+                    'serialize' => false,
+                ]
+            ],
+            'async'    =>    [
+                'pool'    =>    [
+                    'class'        =>    \Imi\Redis\CoroutineRedisPool::class,
+                    'config'    =>    [
+                        'maxResources'    =>    16,
+                        'minResources'    =>    0,
+                    ],
+                ],
+                'resource'    =>    [
+                    'host'      => '127.0.0.1',
+                    'port'      => 6379,
+                    'password'  => null,
+                    // 是否自动序列化变量
+                    'serialize' => false,
                 ]
             ],
         ],
@@ -142,6 +176,16 @@ return [
                 ],
             ],
         ]
+    ],
+
+    'room'  =>  [
+        'lock'  =>  [
+            'options'   =>  [
+                'waitTimeout'   =>  10000,
+                'lockExpire'    =>  10000,
+                'keyPrefix'     =>  'imi:gobang:lock:'
+            ],
+        ],
     ],
 
 ];
