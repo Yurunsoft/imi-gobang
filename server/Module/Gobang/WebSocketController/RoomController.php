@@ -33,6 +33,7 @@ class RoomController extends WebSocketController
      */
     public function list($data)
     {
+        $this->server->joinGroup('rooms', $this->frame->getFd());
         $list = $this->roomLogic->getList();
         return [
             'action'    =>  'room.list',

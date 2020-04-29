@@ -25,6 +25,8 @@ class RoomModel extends RedisModel
     /**
      * 创建者ID
      *
+     * @Column
+     *
      * @var int
      */
     protected $creatorId;
@@ -82,6 +84,33 @@ class RoomModel extends RedisModel
      * @var string
      */
     protected $title;
+
+    /**
+     * 创建者名称
+     * 
+     * @Column
+     *
+     * @var string
+     */
+    protected $creator;
+
+    /**
+     * 人数
+     * 
+     * @Column
+     *
+     * @var int
+     */
+    protected $person;
+
+    /**
+     * 状态文本
+     * 
+     * @Column
+     *
+     * @var string
+     */
+    protected $statusText;
 
     /**
      * Get 玩家1
@@ -274,4 +303,35 @@ class RoomModel extends RedisModel
 
         return $this;
     }
+
+    /**
+     * Get 创建者名称
+     *
+     * @return string
+     */ 
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * Get 人数
+     *
+     * @return int
+     */ 
+    public function getPerson()
+    {
+        return $this->person;
+    }
+
+    /**
+     * Get 状态文本
+     *
+     * @return string
+     */ 
+    public function getStatusText()
+    {
+        return $this->statusText;
+    }
+
 }

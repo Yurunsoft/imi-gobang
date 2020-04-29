@@ -8,6 +8,7 @@ return [
     'beanScan'    =>    [
         'ImiApp\MainServer\HttpController',
         'ImiApp\MainServer\Aop',
+        'ImiApp\MainServer\Middleware',
         'ImiApp\Enum',
         'ImiApp\Module',
     ],
@@ -51,12 +52,12 @@ return [
             'redisPool'    =>    'redis',
         ],
         'ServerGroup'   =>  [
-            'status'        =>  false,
         ],
         'ConnectContextStore'   =>  [
-            'handlerClass'  =>  \Imi\Server\ConnectContext\StoreHandler\Local::class,
+            'handlerClass'  =>  \Imi\Server\ConnectContext\StoreHandler\Redis::class,
         ],
-        'ConnectContextLocal'    =>    [
+        'ConnectContextRedis'    =>    [
+            'redisPool' =>  'redis',
             'lockId'    =>  'redis',
         ],
         'OptionsMiddleware' =>  [

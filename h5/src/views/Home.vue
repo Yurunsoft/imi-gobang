@@ -8,7 +8,7 @@
 
     <div id="start">
       <div v-if="logined">
-        <p>{{GLOBAL.userInfo.username}}</p>
+        <p v-if="GLOBAL">{{GLOBAL.userInfo.username}}</p>
         <a id="btn-start" @click="start">开始游戏</a>
       </div>
       <template v-else>
@@ -99,7 +99,7 @@ export default {
           password: this.password,
         }
       }).then((result) => {
-        if(this.logined = 0 === result.code)
+        if(0 === result.code)
         {
           window.localStorage['sessionId'] = result.token
         }
@@ -109,8 +109,11 @@ export default {
     },
     // 开始游戏
     start() {
-
-      // this.$router.push({name:'rooms'});
+      if(!this.logined)
+      {
+        alert('请先登录');
+      }
+      this.$router.push({name:'rooms'});
     },
   }
 };

@@ -1,9 +1,9 @@
 <template>
   <div class="rooms">
-    <p>你好，{{GLOBAL.userInfo.username}}!</p>
+    <p v-if="GLOBAL.userInfo">你好，{{GLOBAL.userInfo.username}}!</p>
 
     <div>
-      <a id="btn-create-room">创建房间</a>
+      <a id="btn-create-room" @click="createRoom">创建房间</a>
     </div>
 
     <p>房间列表：</p>
@@ -27,32 +27,53 @@
 </template>
 
 <script>
+import global from '../global';
 export default {
   data() {
     return {
       rooms: [
         // 测试数据：
-        {
-          "title": "快来人！！！快来人！！！快来人！！！快来人！！！", // 标题
-          "creator": "测试昵称", // 创建者
-          "person": 1, // 人数
-          "status": 1, // 状态
-          "statusText": "等待中", // 状态文本
-        },
-        {
-          "title": "快来人！！！",
-          "creator": "测试昵称",
-          "person": 2,
-          "status": 2,
-          "statusText": "对弈中",
-        }
+        // {
+        //   "title": "快来人！！！快来人！！！快来人！！！快来人！！！", // 标题
+        //   "creator": "测试昵称", // 创建者
+        //   "person": 1, // 人数
+        //   "status": 1, // 状态
+        //   "statusText": "等待中", // 状态文本
+        // },
+        // {
+        //   "title": "快来人！！！",
+        //   "creator": "测试昵称",
+        //   "person": 2,
+        //   "status": 2,
+        //   "statusText": "对弈中",
+        // }
       ],
     };
   },
   mounted(){
-
+    if(!this.GLOBAL.userInfo)
+    {
+      this.$router.push("/")
+      return;
+    }
+    this.GLOBAL.websocketConnection.open(()=>{
+      this.loadRoomList();
+    });
+    global.websocketConnection.onAction('room.list', (data)=>{
+      this.rooms = data.list;
+    })
   },
   methods: {
+    // 加载房间列表
+    loadRoomList(){
+      this.GLOBAL.websocketConnection.sendEx('room.list');
+    },
+    // 创建房间
+    createRoom(){
+      this.GLOBAL.websocketConnection.sendEx('room.create', {
+        title: 'test',
+      });
+    },
     // 加入
     join(room){
 
