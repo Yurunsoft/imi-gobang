@@ -43,113 +43,81 @@ return [
     'pools'    =>    [
         // 主数据库
         'maindb'    =>    [
-            // 同步池子
-            'sync'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Db\Pool\SyncDbPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    10,
-                        'minResources'    =>    0,
-                    ],
-                ],
-                'resource'    =>    [
-                    'host'        => '127.0.0.1',
-                    'port'        => 3306,
-                    'username'    => 'root',
-                    'password'    => 'root',
-                    'database'    => 'database_name',
-                    'charset'     => 'utf8mb4',
-                    'options'   =>  [
-                        \PDO::ATTR_STRINGIFY_FETCHES    =>  false,
-                        \PDO::ATTR_EMULATE_PREPARES     =>  false,
-                    ],
+            'pool' => [
+                // 同步池类名
+                'syncClass'     =>    \Imi\Db\Pool\SyncDbPool::class,
+                // 协程池类名
+                'asyncClass'    =>    \Imi\Db\Pool\CoroutineDbPool::class,
+                // 连接池配置
+                'config' => [
+                    // 池子中最多资源数
+                    'maxResources' => 16,
+                    // 池子中最少资源数
+                    'minResources' => 1,
                 ],
             ],
-            // 异步池子，worker进程使用
-            'async'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Db\Pool\CoroutineDbPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    10,
-                        'minResources'    =>    0,
-                    ],
+            // 连接池资源配置
+            'resource' => [
+                'host'        => '127.0.0.1',
+                'port'        => 3306,
+                'username'    => 'root',
+                'password'    => 'root',
+                'database'    => 'db_gobang',
+                'charset'     => 'utf8mb4',
+                'options'   =>  [
+                    \PDO::ATTR_STRINGIFY_FETCHES    =>  false,
+                    \PDO::ATTR_EMULATE_PREPARES     =>  false,
                 ],
-                'resource'    =>    [
-                    'host'        => '127.0.0.1',
-                    'port'        => 3306,
-                    'username'    => 'root',
-                    'password'    => 'root',
-                    'database'    => 'database_name',
-                    'charset'     => 'utf8mb4',
-                    'options'   =>  [
-                        \PDO::ATTR_STRINGIFY_FETCHES    =>  false,
-                        \PDO::ATTR_EMULATE_PREPARES     =>  false,
-                    ],
-                ],
-            ]
+            ],
         ],
         'redis'    =>    [
-            'sync'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\SyncRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    16,
-                        'minResources'    =>    0,
-                    ],
+            'pool' => [
+                // 同步池类名
+                'syncClass'     =>    \Imi\Redis\SyncRedisPool::class,
+                // 协程池类名
+                'asyncClass'    =>    \Imi\Redis\CoroutineRedisPool::class,
+                'config' => [
+                    // 池子中最多资源数
+                    'maxResources' => 16,
+                    // 池子中最少资源数
+                    'minResources' => 1,
                 ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                ]
             ],
-            'async'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\CoroutineRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    16,
-                        'minResources'    =>    0,
-                    ],
-                ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                ]
+            // 数组资源配置
+            'resource' => [
+                'host'    =>    '127.0.0.1',
+                'port'    =>    6379,
+                // 是否自动序列化变量
+                'serialize'    =>    true,
+                // 密码
+                'password'    =>    null,
+                // 第几个库
+                'db'    =>    0,
             ],
         ],
         'redisNoSerialize'    =>    [
-            'sync'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\SyncRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    16,
-                        'minResources'    =>    0,
-                    ],
+            'pool' => [
+                // 同步池类名
+                'syncClass'     =>    \Imi\Redis\SyncRedisPool::class,
+                // 协程池类名
+                'asyncClass'    =>    \Imi\Redis\CoroutineRedisPool::class,
+                'config' => [
+                    // 池子中最多资源数
+                    'maxResources' => 16,
+                    // 池子中最少资源数
+                    'minResources' => 1,
                 ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                    // 是否自动序列化变量
-                    'serialize' => false,
-                ]
             ],
-            'async'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\CoroutineRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    16,
-                        'minResources'    =>    0,
-                    ],
-                ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                    // 是否自动序列化变量
-                    'serialize' => false,
-                ]
+            // 数组资源配置
+            'resource' => [
+                'host'    =>    '127.0.0.1',
+                'port'    =>    6379,
+                // 是否自动序列化变量
+                'serialize'    =>    false,
+                // 密码
+                'password'    =>    null,
+                // 第几个库
+                'db'    =>    0,
             ],
         ],
     ],
@@ -188,4 +156,15 @@ return [
         ],
     ],
 
+    'tools'  =>  [
+        'generate/model'    =>  [
+            'namespace' =>  [
+                'ImiApp\Module\Member\Model' =>  [
+                    'tables'    =>  [
+                        'tb_member',
+                    ],
+                ],
+            ]
+        ],
+    ],
 ];

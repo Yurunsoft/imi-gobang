@@ -1,5 +1,5 @@
 <?php
-namespace ImiApp\Module\Gobang\Controller;
+namespace ImiApp\Module\Gobang\WebSocketController;
 
 use Imi\ConnectContext;
 use Imi\Aop\Annotation\Inject;

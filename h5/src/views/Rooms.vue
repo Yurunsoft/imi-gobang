@@ -1,6 +1,6 @@
 <template>
   <div class="rooms">
-    <p>你好，{{GLOBAL.nickName}}!</p>
+    <p>你好，{{GLOBAL.userInfo.username}}!</p>
 
     <div>
       <a id="btn-create-room">创建房间</a>
@@ -13,7 +13,7 @@
           <span class="title">{{item.title}}</span>
         </div>
 
-        <div class="nickname">房主：{{item.creator}}</div>
+        <div class="username">房主：{{item.creator}}</div>
 
         <div>
           <span class="person">人数：({{item.person}}/2)</span>

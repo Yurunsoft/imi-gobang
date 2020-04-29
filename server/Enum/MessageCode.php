@@ -16,4 +16,14 @@ abstract class MessageCode extends BaseEnum
      */
     const ERROR = 500;
 
+    /**
+     * @EnumItem("未找到记录")
+     */
+    const NOT_FOUND = 404;
+
+    /**
+     * @EnumItem("用户未登录")
+     */
+    const MEMBER_NOT_LOGIN = 1001;
+
 }

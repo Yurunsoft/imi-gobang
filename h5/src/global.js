@@ -1,3 +1,3 @@
 export default {
-  nickName: null, // 玩家昵称
+  userInfo: null, // 玩家信息
 }

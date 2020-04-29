@@ -7,12 +7,13 @@
     <h1>五子棋在线对战</h1>
 
     <div id="start">
-      <div><input id="input-nickname" type="text" placeholder="请输入昵称" v-model="nickName"/></div>
-      <div><input id="input-password" type="password" placeholder="请输入密码" v-model="password"/></div>
       <div v-if="logined">
+        <p>{{GLOBAL.userInfo.username}}</p>
         <a id="btn-start" @click="start">开始游戏</a>
       </div>
       <template v-else>
+        <div><input id="input-username" type="text" placeholder="请输入昵称" v-model="username"/></div>
+        <div><input id="input-password" type="password" placeholder="请输入密码" v-model="password"/></div>
         <div>
           <a id="btn-login" @click="login">登录</a>
         </div>
@@ -45,7 +46,7 @@
 
 <script>
 // @ is an alias to /src
-
+import request from '@/plugin/axios'
 export default {
   name: "home",
   components: {
@@ -53,32 +54,63 @@ export default {
   data() {
     return {
       logined: false,
-      nickName: '',
+      username: '',
       password: '',
     };
   },
   mounted() {
+    this.loadStatus()
   },
   methods: {
+    // 加载登录状态
+    loadStatus(){
+      request({
+        url: '/member/status',
+        excludeCodes: [1001],
+      }).then((result) => {
+        this.GLOBAL.userInfo = result.data;
+        this.logined = 0 === result.code;
+      })
+    },
     // 注册
     register(){
-
+      request({
+        method: 'POST',
+        url: '/member/register',
+        data: {
+          username: this.username,
+          password: this.password,
+        }
+      }).then((result) => {
+        if(0 === result.code)
+        {
+          this.password = '';
+          alert('注册成功，请再次输入密码登录');
+        }
+      })
     },
     // 登录
     login(){
-      // TODO: 登录
-      this.logined = true;
+      request({
+        method: 'POST',
+        url: '/member/login',
+        data: {
+          username: this.username,
+          password: this.password,
+        }
+      }).then((result) => {
+        if(this.logined = 0 === result.code)
+        {
+          window.localStorage['sessionId'] = result.token
+        }
+        this.loadStatus();
+        alert('登录成功');
+      })
     },
     // 开始游戏
     start() {
-      if('' === this.nickName)
-      {
-        alert('请输入昵称哦！');
-      }
-      // TODO：HTTP 登录
-      
-      this.GLOBAL.nickName = this.nickName;
-      this.$router.push({name:'rooms'});
+
+      // this.$router.push({name:'rooms'});
     },
   }
 };
@@ -96,7 +128,7 @@ h3 {
 }
 #start:extend(.center) {
   margin: 36px 0;
-  #input-nickname, #input-password{
+  #input-username, #input-password{
     border-color: #e6e6e6;
     height: 38px;
     line-height: 1.3;
