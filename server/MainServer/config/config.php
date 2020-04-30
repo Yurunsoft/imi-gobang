@@ -20,9 +20,9 @@ return [
             'savePath'    =>    dirname(__DIR__, 2) . '/.runtime/.session/',
         ],
         'SessionConfig'    =>    [
-
         ],
         'SessionCookie'    =>    [
+            'enable'    =>  false,
             'lifetime'    =>    86400 * 30,
         ],
         'HttpDispatcher'    =>    [

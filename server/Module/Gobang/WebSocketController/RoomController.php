@@ -52,10 +52,10 @@ class RoomController extends WebSocketController
      */
     public function create($data)
     {
-        $roomId = $this->roomLogic->create(ConnectContext::get('memberId'), $data['title'] ?? null);
+        $roomInfo = $this->roomLogic->create(ConnectContext::get('memberId'), $data['title'] ?? null);
         return [
             'action'    =>  MessageActions::ROOM_CREATE,
-            'roomId'    =>  $roomId,
+            'roomInfo'  =>  $roomInfo,
         ];
     }
 
@@ -70,9 +70,10 @@ class RoomController extends WebSocketController
      */
     public function join($data)
     {
-        $this->roomLogic->join(ConnectContext::get('memberId'), $data['roomId']);
+        $roomInfo = $this->roomLogic->join(ConnectContext::get('memberId'), $data['roomId']);
         return [
             'action'    =>  MessageActions::ROOM_JOIN,
+            'roomInfo'  =>  $roomInfo,
         ];
     }
 
@@ -87,9 +88,10 @@ class RoomController extends WebSocketController
      */
     public function watch($data)
     {
-        $this->roomLogic->watch(ConnectContext::get('memberId'), $data['roomId']);
+        $roomInfo = $this->roomLogic->watch(ConnectContext::get('memberId'), $data['roomId']);
         return [
             'action'    =>  MessageActions::ROOM_WATCH,
+            'roomInfo'  =>  $roomInfo,
         ];
     }
 

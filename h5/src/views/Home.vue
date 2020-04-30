@@ -113,7 +113,7 @@ export default {
       {
         alert('请先登录');
       }
-      this.$router.push({name:'rooms'});
+      this.$router.replace({name:'rooms'});
     },
   }
 };

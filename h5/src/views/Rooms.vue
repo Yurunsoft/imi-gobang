@@ -13,7 +13,7 @@
           <span class="title">{{item.title}}</span>
         </div>
 
-        <div class="username">房主：{{item.creator}}</div>
+        <div class="username">房主：{{item.creator.username}}</div>
 
         <div>
           <span class="person">人数：({{item.person}}/2)</span>
@@ -53,15 +53,19 @@ export default {
   mounted(){
     if(!this.GLOBAL.userInfo)
     {
-      this.$router.push("/")
+      this.$router.replace("/")
       return;
     }
-    this.GLOBAL.websocketConnection.open(()=>{
-      this.loadRoomList();
-    });
-    global.websocketConnection.onAction('room.list', (data)=>{
-      this.rooms = data.list;
-    })
+    try {
+      this.GLOBAL.websocketConnection.open(()=>{
+        this.loadRoomList();
+      });
+    } catch(e) {
+      alert(e)
+    }
+    this.GLOBAL.websocketConnection.onAction('room.list', this.onRoomList)
+    this.GLOBAL.websocketConnection.onAction('room.create', this.onCreateRoom)
+    this.GLOBAL.websocketConnection.onAction('room.join', this.onJoinRoom)
   },
   methods: {
     // 加载房间列表
@@ -76,12 +80,36 @@ export default {
     },
     // 加入
     join(room){
-
+      this.GLOBAL.websocketConnection.sendEx('room.join', {
+        roomId: room.roomId,
+      });
     },
     // 观战
     watch(room){
 
     },
+    // 房间列表回调
+    onRoomList(data){
+      this.rooms = data.list;
+    },
+    // 创建房间回调
+    onCreateRoom(data){
+      this.$router.replace({
+        name: 'gobang',
+        params: {
+          roomInfo: data.roomInfo,
+        },
+      });
+    },
+    // 加入房间回调
+    onJoinRoom(data){
+      this.$router.replace({
+        name: 'gobang',
+        params: {
+          roomInfo: data.roomInfo,
+        },
+      });
+    }
   },
 };
 </script>

@@ -76,7 +76,6 @@ class MemberService
      */
     public function login(string $username, string $password)
     {
-        var_dump($username, $password);
         $record = $this->getByUsername($username);
         if(password_verify($password, $record->password))
         {

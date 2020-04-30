@@ -31,13 +31,28 @@ export default class WS {
         this.ws.onmessage = (evt) => {
             console.log(evt)
             const data = JSON.parse(evt.data);
-            const {action} = data;
-            console.log(this.onActions, data)
+            const action = undefined !== data.action ? data.action : '';
+            const code = undefined !== data.code ? data.code : 0;
+            let eventParam = {
+                break: false,
+                parseCode: true,
+            };
             if(this.onActions[action])
             {
                 for(let callback of this.onActions[action])
                 {
-                    callback(data);
+                    callback(data, eventParam);
+                    if(eventParam.break)
+                    {
+                        break;
+                    }
+                }
+            }
+            if(eventParam.parseCode)
+            {
+                if(code !== 0)
+                {
+                    alert(undefined !== data.message ? data.message : '未知错误');
                 }
             }
             // messageCache.push(getNowFormatDate() + "\r\n" + fuckXSS(evt.data.substring(0, 128)) + "\r\n\r\n");

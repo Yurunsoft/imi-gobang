@@ -34,6 +34,13 @@ class GobangLogic
     protected $roomLogic;
 
     /**
+     * @Inject("MemberService")
+     *
+     * @var \ImiApp\Module\Member\Service\MemberService
+     */
+    protected $memberService;
+
+    /**
      * 落子
      *
      * @param integer $roomId
@@ -47,7 +54,11 @@ class GobangLogic
         $game = $this->gobangService->go($roomId, $memberId, $x, $y);
         $data = [];
         $winner = $game->referee($x, $y);
-        if(GobangCell::NONE !== $winner)
+        if(GobangCell::NONE === $winner)
+        {
+            $data['winner'] = null;
+        }
+        else
         {
             $room = $this->roomService->getInfo($winner);
             if($winner === $game->getPlayer1Color())
@@ -64,10 +75,11 @@ class GobangLogic
             }
             // TODO:用户信息$winnerMemberId
             // $data['content'] = sprintf('胜者 %s', )
+            $data['winner'] = $this->memberService->get($winnerMemberId);
         }
         // 棋盘
         $data['map'] = $game->getGobangMap();
-        $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_GO_RESULT_NOTIFY, $data);
+        $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_RESULT_NOTIFY, $data);
     }
 
 }

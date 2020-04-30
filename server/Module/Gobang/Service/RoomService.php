@@ -5,6 +5,7 @@ use Imi\Config;
 use Imi\Redis\Redis;
 use Imi\Bean\Annotation\Bean;
 use ImiApp\Exception\BusinessException;
+use ImiApp\Module\Gobang\Enum\GobangStatus;
 use ImiApp\Module\Gobang\Model\RoomModel;
 
 /**
@@ -123,14 +124,20 @@ class RoomService
         if($memberId === $room->getPlayerId1())
         {
             $room->setPlayer1Ready(true);
+            $allReady = $room->getPlayer2Ready();
         }
         else if($memberId === $room->getPlayerId2())
         {
             $room->setPlayer2Ready(true);
+            $allReady = $room->getPlayer1Ready();
         }
         else
         {
             throw new BusinessException('玩家不在房间');
+        }
+        if($allReady)
+        {
+            $room->setStatus(GobangStatus::GAMING);
         }
         $room->save();
         return $room;
@@ -146,6 +153,10 @@ class RoomService
     public function cancelReady(int $memberId, int $roomId): RoomModel
     {
         $room = $this->getInfo($roomId);
+        if(GobangStatus::WAIT_START !== $room->getStatus())
+        {
+            throw new BusinessException('状态不正确');
+        }
         if($memberId === $room->getPlayerId1())
         {
             $room->setPlayer1Ready(false);

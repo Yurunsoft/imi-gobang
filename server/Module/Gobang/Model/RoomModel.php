@@ -2,6 +2,7 @@
 namespace ImiApp\Module\Gobang\Model;
 
 use Imi\Model\RedisModel;
+use Imi\Aop\Annotation\Inject;
 use Imi\Model\Annotation\Column;
 use Imi\Model\Annotation\RedisEntity;
 use ImiApp\Module\Gobang\Enum\GobangStatus;
@@ -13,6 +14,13 @@ use ImiApp\Module\Gobang\Enum\GobangStatus;
  */
 class RoomModel extends RedisModel
 {
+    /**
+     * @Inject("MemberService")
+     *
+     * @var \ImiApp\Module\Member\Service\MemberService
+     */
+    protected $memberService;
+
     /**
      * 房间id
      *
@@ -111,6 +119,24 @@ class RoomModel extends RedisModel
      * @var string
      */
     protected $statusText;
+
+    /**
+     * 玩家1信息
+     * 
+     * @Column
+     *
+     * @var \ImiApp\Module\Member\Model\Member
+     */
+    protected $player1;
+
+    /**
+     * 玩家2信息
+     * 
+     * @Column
+     *
+     * @var \ImiApp\Module\Member\Model\Member
+     */
+    protected $player2;
 
     /**
      * Get 玩家1
@@ -311,7 +337,7 @@ class RoomModel extends RedisModel
      */ 
     public function getCreator()
     {
-        return $this->creator;
+        return $this->memberService->get($this->creatorId);
     }
 
     /**
@@ -321,7 +347,16 @@ class RoomModel extends RedisModel
      */ 
     public function getPerson()
     {
-        return $this->person;
+        $person = 0;
+        if($this->playerId1 > 0)
+        {
+            ++$person;
+        }
+        if($this->playerId2 > 0)
+        {
+            ++$person;
+        }
+        return $person;
     }
 
     /**
@@ -331,7 +366,26 @@ class RoomModel extends RedisModel
      */ 
     public function getStatusText()
     {
-        return $this->statusText;
+        return GobangStatus::getText($this->status);
     }
 
+    /**
+     * Get 玩家1信息
+     *
+     * @return \ImiApp\Module\Member\Model\Member
+     */ 
+    public function getPlayer1()
+    {
+        return $this->playerId1 > 0 ? $this->memberService->get($this->playerId1) : null;
+    }
+
+    /**
+     * Get 玩家2信息
+     *
+     * @return \ImiApp\Module\Member\Model\Member
+     */ 
+    public function getPlayer2()
+    {
+        return $this->playerId2 > 0 ? $this->memberService->get($this->playerId2) : null;
+    }
 }

@@ -12,7 +12,7 @@ abstract class GobangStatus extends BaseEnum
     const WAIT_START = 1;
 
     /**
-     * 游戏中
+     * @EnumItem("游戏中")
      */
     const GAMING = 2;
 

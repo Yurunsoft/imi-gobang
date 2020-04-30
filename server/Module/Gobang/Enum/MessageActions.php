@@ -37,6 +37,11 @@ abstract class MessageActions extends BaseEnum
     const ROOM_READY = 'room.ready';
 
     /**
+     * @EnumItem("房间信息推送")
+     */
+    const ROOM_INFO = 'room.info';
+
+    /**
      * @EnumItem("取消准备")
      */
     const ROOM_CANCEL_READY = 'room.cancelReady';
@@ -49,6 +54,6 @@ abstract class MessageActions extends BaseEnum
     /**
      * @EnumItem("落子结果通知")
      */
-    const GOBANG_GO_RESULT_NOTIFY = 'gobang.goResultNotify';
+    const GOBANG_RESULT_NOTIFY = 'gobang.resultNotify';
 
 }
