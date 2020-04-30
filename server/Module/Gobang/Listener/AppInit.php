@@ -1,22 +1,22 @@
 <?php
 namespace ImiApp\Module\Gobang\Listener;
 
-use Imi\Bean\Annotation\Listener;
 use Imi\Redis\Redis;
-use Imi\Server\Event\Param\WorkerStartEventParam;
-use Imi\Server\Event\Listener\IWorkerStartEventListener;
+use Imi\Event\EventParam;
+use Imi\Event\IEventListener;
+use Imi\Bean\Annotation\Listener;
 
 /**
- * @Listener("IMI.MAIN_SERVER.WORKER.START.APP")
+ * @Listener("IMI.APP.INIT")
  */
-class AppInit implements IWorkerStartEventListener
+class AppInit implements IEventListener
 {
     /**
      * 事件处理方法
-     * @param WorkerStartEventParam $e
+     * @param EventParam $e
      * @return void
      */
-    public function handle(WorkerStartEventParam $e)
+    public function handle(EventParam $e)
     {
         Redis::del('imi:gobang:rooms');
         Redis::del('imi:gobang:games');

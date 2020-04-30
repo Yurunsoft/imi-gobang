@@ -5,10 +5,7 @@
 </template>
 
 <script>
-// 黑色棋子
-const BLACK_PIECE = 1;
-// 白色棋子
-const WHITE_PIECE = 2;
+import Piece from "@/utils/piece.js"
 export default {
   name: "Gobang",
   props: {
@@ -43,7 +40,7 @@ export default {
       // 二维数组；0-无棋子；1-黑棋；2-白棋
       gobangMap: [],
       // 当前出子颜色
-      currentPiece: BLACK_PIECE,
+      currentPiece: Piece.BLACK_PIECE,
     };
   },
   mounted() {
@@ -86,8 +83,9 @@ export default {
     // 绘制线条
     drawLines(context){
       const canvasRect = this.canvasObj.getBoundingClientRect();
-      this.cellWidth = parseInt((canvasRect.width - (this.canvasPadding * 2)) / (this.size - 1));
-      this.cellHeight = parseInt((canvasRect.height - (this.canvasPadding * 2)) / (this.size - 1));
+      console.log(canvasRect)
+      this.cellWidth = (canvasRect.width - (this.canvasPadding * 2)) / (this.size - 1);
+      this.cellHeight = (canvasRect.height - (this.canvasPadding * 2)) / (this.size - 1);
       // 绘制横向线条
       this.xBegin = parseInt(this.canvasPadding) + 0.5;
       const hX2 = parseInt(canvasRect.width - this.canvasPadding) + 0.5;
@@ -165,17 +163,14 @@ export default {
       let x = Math.round((e.offsetX - this.canvasPadding) / this.cellWidth)
       let y = Math.round((e.offsetY - this.canvasPadding) / this.cellHeight)
       console.log(x, y)
+      console.log(this.gobangMap)
       if(0 == this.gobangMap[x][y])
       {
         this.gobangMap[x][y] = this.currentPiece;
-        if(BLACK_PIECE === this.currentPiece)
-        {
-          this.currentPiece = WHITE_PIECE;
-        }
-        else if(WHITE_PIECE === this.currentPiece)
-        {
-          this.currentPiece = BLACK_PIECE;
-        }
+        this.$emit('go', {
+          x: x,
+          y: y,
+        });
         this.paint();
       }
     },
@@ -185,7 +180,14 @@ export default {
         img.onload = () => resolve(img);
         img.src = url;
       });
-    }
+    },
+    setMap(map){
+      this.gobangMap = map;
+      this.paint();
+    },
+    setCurrentPiece(currentPiece){
+      this.currentPiece = currentPiece;
+    },
   }
 };
 </script>

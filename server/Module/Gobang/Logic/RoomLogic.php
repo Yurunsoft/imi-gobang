@@ -32,6 +32,13 @@ class RoomLogic
     protected $memberService;
 
     /**
+     * @Inject("GobangService")
+     *
+     * @var \ImiApp\Module\Gobang\Service\GobangService
+     */
+    protected $gobangService;
+
+    /**
      * 获取房间列表
      *
      * @return \ImiApp\Module\Gobang\Model\RoomModel[]
@@ -66,7 +73,7 @@ class RoomLogic
         // 创建房间分组
         RequestContext::getServer()->createGroup('room:' . $room->getRoomId());
         // 加入房间
-        $this->join($memberId, $room->getRoomId());
+        $room = $this->join($memberId, $room->getRoomId());
         // 推送房间列表
         defer(function(){
             $this->pushRooms();
@@ -181,13 +188,21 @@ class RoomLogic
      */
     public function ready(int $memberId, int $roomId)
     {
-        $this->roomService->lock($roomId, function() use($memberId, $roomId){
-            $this->roomService->ready($memberId, $roomId);
+        $room = $game = null;
+        $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room, &$game){
+            $room = $this->roomService->ready($memberId, $roomId);
+            if(GobangStatus::GAMING === $room->getStatus())
+            {
+                $game = $this->gobangService->create($roomId);
+            }
         });
-        defer(function() use($roomId){
+        defer(function() use($roomId, $room, $game){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
-                'roomInfo'  =>  $this->roomService->getInfo($roomId),
+                'roomInfo'  =>  $room,
                 // 'content'   =>  sprintf('%s 已准备', $member->name),
+            ]);
+            $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
+                'game'  =>  $game,
             ]);
         });
     }
@@ -240,7 +255,7 @@ class RoomLogic
                 $roomInfo->setStatus(GobangStatus::WAIT_START);
                 $roomInfo->setPlayer1Ready(false);
                 $roomInfo->setPlayer2Ready(false);
-                if($memberId === $roomInfo->getPlayer1())
+                if($memberId === $roomInfo->getPlayerId1())
                 {
                     $winnerMemberId = $roomInfo->getPlayerId2();
                 }
@@ -249,7 +264,7 @@ class RoomLogic
                     $winnerMemberId = $roomInfo->getPlayerId1();
                 }
                 $winner = $this->memberService->get($winnerMemberId);
-                $this->pushRoomMessage($roomId, MessageActions::GOBANG_RESULT_NOTIFY, [
+                $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
                     'winner'    =>  $winner,
                 ]);
             }

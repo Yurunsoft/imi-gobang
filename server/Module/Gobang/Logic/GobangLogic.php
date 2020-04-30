@@ -5,6 +5,7 @@ use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
 use ImiApp\Exception\BusinessException;
 use ImiApp\Module\Gobang\Enum\GobangCell;
+use ImiApp\Module\Gobang\Enum\GobangStatus;
 use ImiApp\Module\Gobang\Enum\MessageActions;
 
 /**
@@ -60,12 +61,12 @@ class GobangLogic
         }
         else
         {
-            $room = $this->roomService->getInfo($winner);
+            $room = $this->roomService->getInfo($roomId);
             if($winner === $game->getPlayer1Color())
             {
                 $winnerMemberId = $room->getPlayerId1();
             }
-            else if($winner === $game->getPlayer2Color() && $winner === $room->getPlayerId2())
+            else if($winner === $game->getPlayer2Color())
             {
                 $winnerMemberId = $room->getPlayerId2();
             }
@@ -73,13 +74,23 @@ class GobangLogic
             {
                 throw new BusinessException('数据错误');
             }
+            $room->setPlayer1Ready(false);
+            $room->setPlayer2Ready(false);
+            $room->setStatus(GobangStatus::WAIT_START);
+            $room->save();
             // TODO:用户信息$winnerMemberId
             // $data['content'] = sprintf('胜者 %s', )
             $data['winner'] = $this->memberService->get($winnerMemberId);
+            defer(function() use($roomId, $room){
+                $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
+                    'roomInfo'  =>  $room,
+                ]);
+            });
         }
         // 棋盘
-        $data['map'] = $game->getGobangMap();
-        $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_RESULT_NOTIFY, $data);
+        // $data['map'] = $game->getGobangMap();
+        $data['game'] = $game;
+        $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, $data);
     }
 
 }

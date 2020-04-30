@@ -2,7 +2,7 @@
   <div>
     <template v-if="roomInfo">
       <p>[<span v-text="roomInfo.statusText"></span>]<span v-text="roomInfo.title"></span></p>
-      <gobang :disable="gobang.disable"></gobang>
+      <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
       <div id="player-info-box">
         <div>
           玩家1
@@ -24,12 +24,16 @@
         <button v-if="isReady" @click="cancelReady">取消准备</button>
         <button v-else @click="ready">准备</button>
       </div>
+      <div v-if="2 == roomInfo.status">
+        <p>你的颜色：<span v-text="myColorText"></span></p>
+      </div>
     </template>
   </div>
 </template>
 
 <script>
 import Gobang from "@/components/Gobang.vue";
+import piece from '../utils/piece';
 export default {
   components: {
     Gobang,
@@ -37,10 +41,13 @@ export default {
   data() {
     return {
       gobang: {
-        disable: false,
+        disable: true,
       },
       roomInfo: null,
+      gameInfo: null,
       isReady: false,
+      myColor: null,
+      myColorText: '',
     };
   },
   mounted(){
@@ -55,13 +62,15 @@ export default {
     this.GLOBAL.websocketConnection.onAction('room.info', this.onJoinInfo)
     this.GLOBAL.websocketConnection.onAction('room.ready', this.onRoomReady)
     this.GLOBAL.websocketConnection.onAction('room.cancelReady', this.onRoomCancelReady)
-    this.GLOBAL.websocketConnection.onAction('gobang.resultNotify', this.onGobangResultNotify)
+    this.GLOBAL.websocketConnection.onAction('gobang.info', this.onGobangInfo)
     console.log(params.roomInfo);
   },
   methods: {
     // 房间信息回调
     onJoinInfo(data){
       this.roomInfo = data.roomInfo;
+      this.updateMyColor();
+      this.updateGobangDisable();
       console.log(data.roomInfo)
     },
     // 准备
@@ -84,17 +93,61 @@ export default {
     onRoomCancelReady(data){
       this.isReady = false;
     },
-    // 对战结果回调
-    onGobangResultNotify(data){
-      if(data.map)
+    // 对战信息回调
+    onGobangInfo(data){
+      console.log(data)
+      if(data.game)
       {
-
+        const game = data.game;
+        this.gameInfo = game;
+        this.$refs.gobang.setMap(game.gobangMap);
+        this.updateMyColor();
+        this.updateGobangDisable();
       }
       if(data.winner)
       {
         alert(data.winner.username + ' 赢啦！');
         this.isReady = false;
       }
+    },
+    updateMyColor(){
+      if(!this.roomInfo || !this.gameInfo)
+      {
+        return;
+      }
+      if(this.GLOBAL.userInfo.id === this.roomInfo.playerId1)
+      {
+        this.myColor = this.gameInfo.player1Color;
+      }
+      else
+      {
+        this.myColor = this.gameInfo.player2Color;
+      }
+      this.$refs.gobang.setCurrentPiece(this.myColor)
+      switch(this.myColor)
+      {
+        case piece.BLACK_PIECE:
+          this.myColorText = '黑';
+          break;
+        case piece.WHITE_PIECE:
+          this.myColorText = '白';
+          break;
+      }
+    },
+    updateGobangDisable(){
+      if(this.gameInfo)
+      {
+        this.gobang.disable = 1 === this.roomInfo.status || !(this.gameInfo.currentPiece === this.myColor)
+      }
+    },
+    onGo(point){
+      console.log(point.x, point.y);
+      this.gobang.disable = true;
+      this.GLOBAL.websocketConnection.sendEx('gobang.go', {
+        roomId: this.roomInfo.roomId,
+        x: point.x,
+        y: point.y,
+      });
     },
   },
 };

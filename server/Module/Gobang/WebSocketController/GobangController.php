@@ -35,7 +35,7 @@ class GobangController extends WebSocketController
     {
         $this->gobangLogic->go($data['roomId'], ConnectContext::get('memberId'), $data['x'], $data['y']);
         return [
-            'action'    =>  MessageActions::GOBANG_GO_RESULT,
+            'action'    =>  MessageActions::GOBANG_GO,
         ];
     }
 

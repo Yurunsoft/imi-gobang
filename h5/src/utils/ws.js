@@ -22,7 +22,7 @@ export default class WS {
         }
  
         this.ws.onopen = (evt) => {
-            console.log(evt)
+            console.log('onopen', evt)
             this.connected = true;
             callback();
             console.log(this.connected)

@@ -52,8 +52,13 @@ abstract class MessageActions extends BaseEnum
     const GOBANG_GO_RESULT = 'gobang.goResult';
 
     /**
-     * @EnumItem("落子结果通知")
+     * @EnumItem("五子棋落子")
      */
-    const GOBANG_RESULT_NOTIFY = 'gobang.resultNotify';
+    const GOBANG_GO = 'gobang.go';
+
+    /**
+     * @EnumItem("五子棋战局信息通知")
+     */
+    const GOBANG_INFO = 'gobang.info';
 
 }

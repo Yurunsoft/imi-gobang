@@ -67,11 +67,6 @@ class GobangGameModel extends RedisModel
      */
     protected $currentPiece;
 
-    public function __init($data = [])
-    {
-        $this->initMap();
-    }
-
     /**
      * 初始化棋盘
      *
