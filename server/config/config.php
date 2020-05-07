@@ -22,7 +22,6 @@ return [
         'type'      =>  Imi\Server\Type::WEBSOCKET,
         'host'      =>  '0.0.0.0',
         'port'      =>  8080,
-        // 'mode'      =>  SWOOLE_BASE,
         'configs'   =>    [
             // 'worker_num'        =>  8,
             // 'task_worker_num'   =>  16,

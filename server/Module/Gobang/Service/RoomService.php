@@ -82,7 +82,11 @@ class RoomService
      */
     public function watch(int $memberId, int $roomId): RoomModel
     {
-
+        $room = $this->getInfo($roomId);
+        $memberIds = &$room->getWatchMemberIds();
+        $memberIds[] = $roomId;
+        $room->save();
+        return $room;
     }
 
     /**
@@ -105,7 +109,13 @@ class RoomService
         }
         else
         {
-            throw new BusinessException('玩家已不在房间');
+            $watchMemberIds = &$room->getWatchMemberIds();
+            if(false !== ($index = array_search($memberId, $watchMemberIds)))
+            {
+                throw new BusinessException('玩家已不在房间');
+            }
+            unset($watchMemberIds[$index]);
+            $watchMemberIds = array_values($watchMemberIds);
         }
         $room->save();
         return $room;

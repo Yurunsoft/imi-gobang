@@ -113,9 +113,9 @@ class RoomLogic
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function join(int $memberId, int $roomId)
+    public function join(int $memberId, int $roomId): RoomModel
     {
         $room = null;
         $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room){
@@ -129,6 +129,8 @@ class RoomLogic
                 'roomInfo'  =>  $room,
                 // 'content'   =>  sprintf('%s 加入房间', $member->name),
             ]);
+            // 推送房间列表
+            $this->pushRooms();
         });
         return $room;
     }
@@ -138,14 +140,15 @@ class RoomLogic
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function watch(int $memberId, int $roomId)
+    public function watch(int $memberId, int $roomId): RoomModel
     {
         $room = null;
         $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room){
             $room = $this->roomService->watch($memberId, $roomId);
         });
+        ConnectContext::set('roomId', $roomId);
         // 加入房间分组
         RequestContext::getServer()->joinGroup('room:' . $roomId, RequestContext::get('fd'));
         defer(function() use($roomId, $room){
@@ -153,7 +156,10 @@ class RoomLogic
                 'roomInfo'  =>  $room,
                 // 'content'   =>  sprintf('%s 进入观战', $member->name),
             ]);
+            // 推送房间列表
+            $this->pushRooms();
         });
+        return $room;
     }
 
     /**
@@ -161,22 +167,59 @@ class RoomLogic
      *
      * @param integer $memberId
      * @param integer $roomId
-     * @return void
+     * @return \ImiApp\Module\Gobang\Model\RoomModel
      */
-    public function leave(int $memberId, int $roomId)
+    public function leave(int $memberId, int $roomId): RoomModel
     {
-        $this->roomService->lock($roomId, function() use($memberId, $roomId){
-            $this->roomService->leave($memberId, $roomId);
+        $room = null;
+        $isDestoryRoom = false;
+        $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room, &$isDestoryRoom){
+            $room = $this->roomService->leave($memberId, $roomId);
+            // 只有一人时，销毁房间
+            if($room->getPerson() <= 0)
+            {
+                $isDestoryRoom = true;
+                $room->delete();
+                return;
+            }
+            if(GobangStatus::GAMING === $room->getStatus())
+            {
+                $room->setStatus(GobangStatus::WAIT_START);
+                $room->setPlayer1Ready(false);
+                $room->setPlayer2Ready(false);
+                if($memberId === $room->getPlayerId1())
+                {
+                    $winnerMemberId = $room->getPlayerId2();
+                }
+                else
+                {
+                    $winnerMemberId = $room->getPlayerId1();
+                }
+                $winner = $this->memberService->get($winnerMemberId);
+                $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
+                    'winner'    =>  $winner,
+                ]);
+            }
         });
         ConnectContext::set('roomId', null);
         // 离开房间分组
         RequestContext::getServer()->leaveGroup('room:' . $roomId, RequestContext::get('fd'));
-        defer(function() use($roomId){
+        if($isDestoryRoom)
+        {
+            // 房间销毁通知
+            $this->pushRoomMessage($roomId, MessageActions::ROOM_DESTORY, [
+            
+            ]);
+        }
+        defer(function() use($roomId, $room){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
-                'roomInfo'  =>  $this->roomService->getInfo($roomId),
+                'roomInfo'  =>  $room,
                 // 'content'   =>  sprintf('%s 离开房间', $member->name),
             ]);
+            // 推送房间列表
+            $this->pushRooms();
         });
+        return $room;
     }
 
     /**
@@ -204,6 +247,8 @@ class RoomLogic
             $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
                 'game'  =>  $game,
             ]);
+            // 推送房间列表
+            $this->pushRooms();
         });
     }
 
@@ -224,6 +269,8 @@ class RoomLogic
                 'roomInfo'  =>  $this->roomService->getInfo($roomId),
                 // 'content'   =>  sprintf('%s 取消准备', $member->name),
             ]);
+            // 推送房间列表
+            $this->pushRooms();
         });
     }
 
@@ -241,47 +288,7 @@ class RoomLogic
             // 没有进入房间不处理
             return;
         }
-        $this->roomService->lock($roomId, function() use($memberId, $roomId){
-            $roomInfo = $this->roomService->getInfo($roomId);
-            // 只有一人时，销毁房间
-            if(1 === $roomInfo->getPerson())
-            {
-                $roomInfo->delete();
-                $this->pushRooms();
-                return;
-            }
-            if(GobangStatus::GAMING === $roomInfo->getStatus())
-            {
-                $roomInfo->setStatus(GobangStatus::WAIT_START);
-                $roomInfo->setPlayer1Ready(false);
-                $roomInfo->setPlayer2Ready(false);
-                if($memberId === $roomInfo->getPlayerId1())
-                {
-                    $winnerMemberId = $roomInfo->getPlayerId2();
-                }
-                else
-                {
-                    $winnerMemberId = $roomInfo->getPlayerId1();
-                }
-                $winner = $this->memberService->get($winnerMemberId);
-                $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
-                    'winner'    =>  $winner,
-                ]);
-            }
-            if($memberId === $roomInfo->getPlayerId1())
-            {
-                $roomInfo->setPlayerId1(0);
-            }
-            else if($memberId === $roomInfo->getPlayerId2())
-            {
-                $roomInfo->setPlayerId2(0);
-            }
-            $roomInfo->save();
-            $this->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
-                'roomInfo'  =>  $this->roomService->getInfo($roomId),
-                // 'content'   =>  sprintf('%s 离开房间', $member->name),
-            ]);
-        });
+        $this->leave($memberId, $roomId);
     }
 
 }

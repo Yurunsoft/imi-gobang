@@ -66,6 +66,7 @@ export default {
     this.GLOBAL.websocketConnection.onAction('room.list', this.onRoomList)
     this.GLOBAL.websocketConnection.onAction('room.create', this.onCreateRoom)
     this.GLOBAL.websocketConnection.onAction('room.join', this.onJoinRoom)
+    this.GLOBAL.websocketConnection.onAction('room.watch', this.onWatchRoom)
   },
   methods: {
     // 加载房间列表
@@ -86,7 +87,9 @@ export default {
     },
     // 观战
     watch(room){
-
+      this.GLOBAL.websocketConnection.sendEx('room.watch', {
+        roomId: room.roomId,
+      });
     },
     // 房间列表回调
     onRoomList(data){
@@ -109,7 +112,17 @@ export default {
           roomInfo: data.roomInfo,
         },
       });
-    }
+    },
+    // 观战回调
+    onWatchRoom(data){
+      this.$router.replace({
+        name: 'gobang',
+        params: {
+          roomInfo: data.roomInfo,
+          watchMode: true,
+        },
+      });
+    },
   },
 };
 </script>

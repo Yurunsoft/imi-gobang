@@ -139,6 +139,24 @@ class RoomModel extends RedisModel
     protected $player2;
 
     /**
+     * 观战用户列表
+     * 
+     * @Column
+     *
+     * @var array
+     */
+    protected $watchMemberIds = [];
+
+    /**
+     * 观战用户信息列表
+     * 
+     * @Column
+     *
+     * @var array
+     */
+    protected $watchMemberInfos = [];
+
+    /**
      * Get 玩家1
      *
      * @return int
@@ -387,5 +405,48 @@ class RoomModel extends RedisModel
     public function getPlayer2()
     {
         return $this->playerId2 > 0 ? $this->memberService->get($this->playerId2) : null;
+    }
+
+    /**
+     * Get 观战用户列表
+     *
+     * @return array
+     */ 
+    public function &getWatchMemberIds()
+    {
+        return $this->watchMemberIds;
+    }
+
+    /**
+     * Set 观战用户列表
+     *
+     * @param array $watchMemberIds  观战用户列表
+     *
+     * @return self
+     */ 
+    public function setWatchMemberIds(array $watchMemberIds)
+    {
+        $this->watchMemberIds = $watchMemberIds;
+
+        return $this;
+    }
+
+    /**
+     * Get 观战用户信息列表
+     *
+     * @return array
+     */ 
+    public function getWatchMemberInfos()
+    {
+        if(null !== $this->watchMemberInfos)
+        {
+            return $this->watchMemberInfos;
+        }
+        $result = [];
+        foreach($this->watchMemberIds as $memberId)
+        {
+            $result[] = $this->memberService->get($memberId);
+        }
+        return $this->watchMemberInfos = $result;
     }
 }

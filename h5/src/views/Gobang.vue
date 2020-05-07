@@ -20,13 +20,16 @@
         </div>
       </div>
       <!-- 等待开始 -->
-      <div v-if="1 == roomInfo.status" class="center">
-        <button v-if="isReady" @click="cancelReady">取消准备</button>
-        <button v-else @click="ready">准备</button>
-      </div>
-      <div v-if="2 == roomInfo.status">
-        <p>你的颜色：<span v-text="myColorText"></span></p>
-      </div>
+      <template v-if="!watchMode">
+        <div v-if="1 == roomInfo.status" class="center">
+          <button v-if="isReady" @click="cancelReady">取消准备</button>
+          <button v-else @click="ready">准备</button>
+        </div>
+        <div v-if="2 == roomInfo.status">
+          <p>你的颜色：<span v-text="myColorText"></span></p>
+        </div>
+      </template>
+      <button @click="leave">离开房间</button>
     </template>
   </div>
 </template>
@@ -48,6 +51,7 @@ export default {
       isReady: false,
       myColor: null,
       myColorText: '',
+      watchMode: false,
     };
   },
   mounted(){
@@ -58,10 +62,12 @@ export default {
       this.$router.replace('/');
       return;
     }
+    this.watchMode = !!params.watchMode;
     this.roomInfo = params.roomInfo;
     this.GLOBAL.websocketConnection.onAction('room.info', this.onJoinInfo)
     this.GLOBAL.websocketConnection.onAction('room.ready', this.onRoomReady)
     this.GLOBAL.websocketConnection.onAction('room.cancelReady', this.onRoomCancelReady)
+    this.GLOBAL.websocketConnection.onAction('room.destory', this.onRoomDestory)
     this.GLOBAL.websocketConnection.onAction('gobang.info', this.onGobangInfo)
     console.log(params.roomInfo);
   },
@@ -79,6 +85,13 @@ export default {
         roomId: this.roomInfo.roomId,
       });
     },
+    // 离开房间
+    leave(){
+      this.GLOBAL.websocketConnection.sendEx('room.leave', {
+        roomId: this.roomInfo.roomId,
+      });
+      this.$router.replace("/rooms")
+    },
     // 准备回调
     onRoomReady(data){
       this.isReady = true;
@@ -92,6 +105,11 @@ export default {
     // 取消准备回调
     onRoomCancelReady(data){
       this.isReady = false;
+    },
+    // 房间销毁回调
+    onRoomDestory(data){
+      alert('房间被销毁')
+      this.$router.replace("/rooms")
     },
     // 对战信息回调
     onGobangInfo(data){
@@ -119,9 +137,13 @@ export default {
       {
         this.myColor = this.gameInfo.player1Color;
       }
-      else
+      else if(this.GLOBAL.userInfo.id === this.roomInfo.playerId2)
       {
         this.myColor = this.gameInfo.player2Color;
+      }
+      else
+      {
+        this.myColor = null;
       }
       this.$refs.gobang.setCurrentPiece(this.myColor)
       switch(this.myColor)
@@ -131,6 +153,9 @@ export default {
           break;
         case piece.WHITE_PIECE:
           this.myColorText = '白';
+          break;
+        default:
+          this.myColorText = '';
           break;
       }
     },

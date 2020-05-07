@@ -47,6 +47,11 @@ abstract class MessageActions extends BaseEnum
     const ROOM_CANCEL_READY = 'room.cancelReady';
 
     /**
+     * @EnumItem("房间被销毁")
+     */
+    const ROOM_DESTORY = 'room.destory';
+
+    /**
      * @EnumItem("落子结果")
      */
     const GOBANG_GO_RESULT = 'gobang.goResult';
