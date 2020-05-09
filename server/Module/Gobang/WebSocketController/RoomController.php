@@ -11,7 +11,7 @@ use Imi\Server\Route\Annotation\WebSocket\WSController;
 
 /**
  * 房间控制器
- * @WSController
+ * @WSController(route="/ws")
  */
 class RoomController extends WebSocketController
 {
@@ -36,7 +36,7 @@ class RoomController extends WebSocketController
         $this->server->joinGroup('rooms', $this->frame->getFd());
         $list = $this->roomLogic->getList();
         return [
-            'action'    =>  'room.list',
+            'action'    =>  MessageActions::ROOM_LIST,
             'list'      =>  $list,
         ];
     }

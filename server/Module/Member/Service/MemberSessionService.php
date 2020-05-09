@@ -3,6 +3,8 @@ namespace ImiApp\Module\Member\Service;
 
 use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
+use Imi\ConnectContext;
+use Imi\RequestContext;
 use Imi\Server\Session\Session;
 
 /**
@@ -50,7 +52,18 @@ class MemberSessionService
      */
     public function init()
     {
-        $memberId = Session::get('memberId');
+        if($fd = RequestContext::get('fd'))
+        {
+            $memberId = ConnectContext::get('memberId', null, $fd);
+        }
+        else
+        {
+            $memberId = false;
+        }
+        if(!$memberId)
+        {
+            $memberId = Session::get('memberId');
+        }
         if(!$memberId)
         {
             return;
@@ -72,7 +85,7 @@ class MemberSessionService
     /**
      * Get 用户信息
      *
-     * @return \AccountService\Module\Account\Model\Member
+     * @return \ImiApp\Module\Member\Model\Member
      */ 
     public function getMemberInfo()
     {

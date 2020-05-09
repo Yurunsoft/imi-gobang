@@ -23,12 +23,18 @@
       </li>
     </ul>
 
+    <chat room="rooms" class="chat-box"></chat>
+
   </div>
 </template>
 
 <script>
+import Chat from "@/components/Chat.vue";
 import global from '../global';
 export default {
+  components: {
+    Chat,
+  },
   data() {
     return {
       rooms: [
@@ -57,7 +63,7 @@ export default {
       return;
     }
     try {
-      this.GLOBAL.websocketConnection.open(()=>{
+      this.GLOBAL.websocketConnection.open(process.env.VUE_APP_GAME_WEBSOCKET_URL, ()=>{
         this.loadRoomList();
       });
     } catch(e) {
@@ -129,6 +135,14 @@ export default {
 
 <style lang="less" scoped>
 .rooms {
+  height: 100vh;
+  display: flex;
+  // flex-flow: column;
+  align-content: flex-start;
+  flex-direction:column;
+  .chat-box{
+    flex: auto;
+  }
   #btn-create-room {
     display: inline-block;
     text-decoration: none;
@@ -140,8 +154,10 @@ export default {
     color: #fff;
   }
   .room-list{
+    flex: auto;
     font-size: 18px;
     padding: 1em;
+    overflow: auto;
     li{
       margin-bottom: 16px;
       line-height: 32px;

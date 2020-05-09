@@ -5,7 +5,7 @@ export default class WS {
         this.incr = 0;
         this.onActions = {};
     }
-    open(callback = null){
+    open(url, callback = null){
         console.log(this.connected)
         if(this.connected)
         {
@@ -14,7 +14,7 @@ export default class WS {
         let sessionId = window.localStorage['sessionId'];
         if(sessionId)
         {
-            this.ws = new WebSocket(process.env.VUE_APP_WEBSOCKET_URL + '?_sessionId=' + sessionId);
+            this.ws = new WebSocket(url + '?_sessionId=' + sessionId);
         }
         else
         {
@@ -69,6 +69,10 @@ export default class WS {
             console.log(evt)
             // messageCache.push("Connection closed\r\n");
         };
+    }
+    close(){
+        this.ws.close();
+        this.connected = false;
     }
     check(){
         return this.connected;

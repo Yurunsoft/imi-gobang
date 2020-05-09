@@ -11,7 +11,7 @@ use ImiApp\Module\Gobang\Enum\MessageActions;
 
 /**
  * 五子棋控制器
- * @WSController
+ * @WSController(route="/ws")
  */
 class GobangController extends WebSocketController
 {

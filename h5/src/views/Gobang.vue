@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="gobang-box">
     <template v-if="roomInfo">
-      <p>[<span v-text="roomInfo.statusText"></span>]<span v-text="roomInfo.title"></span></p>
+      <p class="title">[<span v-text="roomInfo.statusText"></span>]<span v-text="roomInfo.title"></span></p>
       <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
       <div id="player-info-box">
         <div>
@@ -19,27 +19,32 @@
           <p v-else>等待加入...</p>
         </div>
       </div>
-      <!-- 等待开始 -->
-      <template v-if="!watchMode">
-        <div v-if="1 == roomInfo.status" class="center">
-          <button v-if="isReady" @click="cancelReady">取消准备</button>
-          <button v-else @click="ready">准备</button>
-        </div>
-        <div v-if="2 == roomInfo.status">
-          <p>你的颜色：<span v-text="myColorText"></span></p>
-        </div>
-      </template>
-      <button @click="leave">离开房间</button>
+      <div class="button-box center">
+        <!-- 等待开始 -->
+        <template v-if="!watchMode">
+          <template v-if="1 == roomInfo.status" class="center">
+            <button v-if="isReady" @click="cancelReady">取消准备</button>
+            <button v-else @click="ready">准备</button>
+          </template>
+          <template v-if="2 == roomInfo.status">
+            <p>你的颜色：<span v-text="myColorText"></span></p>
+          </template>
+        </template>
+        <button @click="leave">离开房间</button>
+      </div>
     </template>
+    <chat class="chat-box" v-if="roomInfo" :room="roomInfo.id"></chat>
   </div>
 </template>
 
 <script>
 import Gobang from "@/components/Gobang.vue";
+import Chat from "@/components/Chat.vue";
 import piece from '../utils/piece';
 export default {
   components: {
     Gobang,
+    Chat,
   },
   data() {
     return {
@@ -179,6 +184,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.gobang-box{
+  height: 100vh;
+  display: flex;
+  // flex-flow: column;
+  align-content: flex-start;
+  flex-direction:column;
+  .chat-box{
+    flex: auto;
+  }
+}
+.title{
+  margin: 16px 0 4px 0;
+}
 .center{
   text-align: center;
 }
@@ -193,6 +211,11 @@ export default {
   align-content: flex-start;
   div{
     flex: 0 0 50%;
+  }
+}
+.button-box{
+  button{
+    margin: 0 4px;
   }
 }
 </style>
