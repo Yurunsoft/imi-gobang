@@ -71,8 +71,11 @@ export default {
     // 接收内容
     onReceive(data){
       const chatContent = this.$refs.chatContent;
-      console.log(chatContent.scrollHeight - chatContent.scrollTop, chatContent.clientHeight)
       const willScroll = chatContent.scrollHeight - chatContent.scrollTop === chatContent.clientHeight;
+      if(this.chatRecords.length >= 100)
+      {
+        this.chatRecords.shift();
+      }
       this.chatRecords.push(data);
       if(willScroll)
       {

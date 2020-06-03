@@ -149,7 +149,6 @@ h1{
 .rooms {
   height: 100vh;
   display: flex;
-  // flex-flow: column;
   align-content: flex-start;
   flex-direction:column;
   .hello{
@@ -164,7 +163,6 @@ h1{
     padding-bottom: 6px;
   }
   .chat-box{
-    // flex: auto;
     margin-bottom: 8px;
   }
   #btn-create-room {
@@ -200,8 +198,6 @@ h1{
       padding: 16px 18px;
       position: relative;
       margin-bottom: 12px;
-      // margin-bottom: 16px;
-      // line-height: 32px;
       .title{
         display:inline-block;
         overflow: hidden;
