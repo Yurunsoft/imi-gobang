@@ -1,14 +1,12 @@
 <template>
   <div id="app">
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div> -->
-    <router-view/>
+    <div class="bg1"></div>
+    <div class="bg-river"></div>
+    <router-view class="router-view"/>
   </div>
 </template>
 
-<style>
+<style lang="less">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -16,6 +14,12 @@
   /* text-align: center;
   color: #2c3e50; */
   padding: 0 16px;
+  background-color: #1B6353;
+  height: 100vh;
+  .router-view{
+    z-index: 2;
+    position: relative;
+  }
 }
 /* #nav {
   padding: 30px;
