@@ -165,7 +165,7 @@ h1{
   }
   .chat-box{
     // flex: auto;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }
   #btn-create-room {
     display: inline-block;
@@ -236,7 +236,6 @@ h1{
         text-decoration: none;
         color: #43BB43;
         margin-right: 4px;
-        margin-right: 20px;
       }
       .watch{
         display: inline-block;
