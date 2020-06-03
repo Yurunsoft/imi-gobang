@@ -1,12 +1,16 @@
 <template>
   <div class="rooms">
-    <p v-if="GLOBAL.userInfo">你好，{{GLOBAL.userInfo.username}}!</p>
+    <p class="hello" v-if="GLOBAL.userInfo">
+      <img class="logined-thumb" src="../assets/thumb.png"/>
+      你好，{{GLOBAL.userInfo.username}}！
+    </p>
 
     <div>
-      <a id="btn-create-room" @click="createRoom">创建房间</a>
+      <h1>房间列表</h1>
+      <button id="btn-create-room" @click="createRoom"></button>
     </div>
 
-    <p>房间列表：</p>
+    <!-- 房间列表 -->
     <ul class="room-list">
       <li v-for="(item, index) in rooms" :key="index">
         <div>
@@ -15,15 +19,18 @@
 
         <div class="username">房主：{{item.creator.username}}</div>
 
-        <div>
+        <div class="box1">
           <span class="person">人数：({{item.person}}/2)</span>
-          <a class="join" v-if="item.person < 2" @click="join(item)">加入</a>
-          <a class="watch" @click="watch(item)">观战</a>
+          <div class="room-btn-box">
+            <a class="join" v-if="item.person < 2" @click="join(item)">加入</a>
+            <a class="watch" @click="watch(item)">观战</a>
+          </div>
         </div>
       </li>
     </ul>
 
-    <chat room="rooms" class="chat-box"></chat>
+    <!-- 聊天 -->
+    <chat room="rooms" class="chat-box" :rows="5"></chat>
 
   </div>
 </template>
@@ -134,63 +141,112 @@ export default {
 </script>
 
 <style lang="less" scoped>
+h1{
+  display: inline;
+  line-height: 40px;
+  font-size: 22px;
+}
 .rooms {
   height: 100vh;
   display: flex;
   // flex-flow: column;
   align-content: flex-start;
   flex-direction:column;
+  .hello{
+    color: #fff;
+    font-size: 20px;
+  }
+  .logined-thumb{
+    width: 36px;
+    height: 36px;
+    vertical-align: middle;
+    padding-right: 8px;
+    padding-bottom: 6px;
+  }
   .chat-box{
-    flex: auto;
+    // flex: auto;
+    margin-bottom: 4px;
   }
   #btn-create-room {
     display: inline-block;
-    text-decoration: none;
-    border-radius: 8px;
-    padding: 8px 24px;
-    font-size: 24px;
-    background: #1e9fff;
-    margin-top: 16px;
-    color: #fff;
+    background-color:linear-gradient(-18deg,rgba(233,236,243,1) 0%,rgba(255,255,255,1) 100%);
+    border:none;
+    border-radius:30px;
+    width: 100px;
+    line-height: 40px;
+    height: 40px;
+    float: right;
+    &::after{
+      content: ' ';
+      display: block;
+      background-image: url(/img/create-room.368ddd85.png);
+      background-size: 90%;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 100%;
+      height: inherit;
+    }
   }
   .room-list{
     flex: auto;
     font-size: 18px;
-    padding: 1em;
     overflow: auto;
+    padding: 0;
+    margin-bottom: 0;
     li{
-      margin-bottom: 16px;
-      line-height: 32px;
-    }
-    .title{
-      display:inline-block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      vertical-align: middle;
-      width: -webkit-fill-available;
-    }
-    .person{
-      margin-right: 1em;
-    }
-    .join{
-      display: inline-block;
-      text-decoration: none;
-      border-radius: 4px;
-      padding: 4px 8px;
-      background: #1e9fff;
-      color: #fff;
-      margin-right: 4px;
-      line-height: 24px;
-    }
-    .watch{
-      display: inline-block;
-      text-decoration: none;
-      border-radius: 4px;
-      padding: 4px 8px;
-      background: #1e9fff;
-      color: #fff;
-      line-height: 24px;
+      background:rgba(243,244,248,0.5);
+      border:1px solid rgba(255,255,255,1);
+      border-radius:20px;
+      padding: 16px 18px;
+      position: relative;
+      margin-bottom: 12px;
+      // margin-bottom: 16px;
+      // line-height: 32px;
+      .title{
+        display:inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        width: -webkit-fill-available;
+        color: #0D3129;
+        font-size: 24px;
+        font-weight:bold;
+      }
+      .username{
+        margin-top: 20px;
+        color: #323F49;
+      }
+      .box1{
+        margin-top: 20px;
+        color: #323F49;
+      }
+      .person{
+        margin-right: 1em;
+      }
+      .join,.watch{
+        background:rgba(243,244,248,1);
+        border-radius:30px;
+        width: 92px;
+        line-height: 36px;
+        text-align: center;
+      }
+      .join{
+        display: inline-block;
+        text-decoration: none;
+        color: #43BB43;
+        margin-right: 4px;
+        margin-right: 20px;
+      }
+      .watch{
+        display: inline-block;
+        text-decoration: none;
+        color: #1E9FFF;
+      }
+      .room-btn-box{
+        float:right;
+        margin-top: -10px;
+      }
     }
   }
 }

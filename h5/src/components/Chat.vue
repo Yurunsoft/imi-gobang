@@ -1,9 +1,17 @@
 <template>
   <div class="chat">
-    <textarea class="chat-content" readonly v-text="chatContent" ></textarea>
+    <!-- <textarea class="chat-content" contentEditable="true" readonly v-text="chatContent" ></textarea> -->
+    <ul ref="chatContent" class="chat-content" :style="chatContentStyle">
+      <li v-for="(item, index) in chatRecords">
+        <span class="sender"><span v-text="item.sender"></span>: </span>
+        <span v-text="item.content"></span>
+      </li>
+    </ul>
     <form class="input-area" @submit.prevent="sendContent">
-      <input type="text" v-model="inputContent"/>
-      <button>发送</button>
+      <div class="send-input-box">
+        <input type="text" v-model="inputContent"/>
+        <button class="btn-send"></button>
+      </div>
     </form>
   </div>
 </template>
@@ -25,10 +33,12 @@ export default {
     return {
       // WebSocket 连接对象
       wsConn: null,
-      // 聊天区内容
-      chatContent: '',
       // 输入区内容
       inputContent: '',
+      // 聊天记录
+      chatRecords: [],
+      // 聊天内容区样式
+      chatContentStyle: '',
     };
   },
   mounted() {
@@ -39,6 +49,8 @@ export default {
       });
     });
     this.wsConn.onAction('im.receive', this.onReceive)
+    console.log(this.rows)
+    this.chatContentStyle = 'height:' + (24 * this.rows + 20) + 'px';
   },
   beforeDestroy(){
     this.wsConn.close();
@@ -58,8 +70,16 @@ export default {
     },
     // 接收内容
     onReceive(data){
-      var content = data.sender + ": " + data.content + "\r\n";
-      this.chatContent += content;
+      const chatContent = this.$refs.chatContent;
+      console.log(chatContent.scrollHeight - chatContent.scrollTop, chatContent.clientHeight)
+      const willScroll = chatContent.scrollHeight - chatContent.scrollTop === chatContent.clientHeight;
+      this.chatRecords.push(data);
+      if(willScroll)
+      {
+        this.$nextTick(function(){
+          chatContent.scrollTop = chatContent.scrollHeight;
+        })
+      }
     },
   },
 };
@@ -68,22 +88,62 @@ export default {
 <style lang="less" scoped>
 .chat {
   display: flex;
-  // flex-flow: column;
-  // align-content: flex-start;
   flex-direction:column;
   .chat-content{
     width: 100%;
     box-sizing: border-box;
-    line-height: 24px;
-    flex:auto;
+    // flex:auto;
+    border:none;
+    background:rgba(0,0,0,0.5);
+    border-radius:8px;
+    outline: none;
+    padding: 10px;
+    list-style: none;
+    color: #fff;
+    overflow: auto;
+    margin-bottom: 6px;
+    li{
+      word-break: break-word;
+      line-height: 24px;
+      span{
+        &.sender{
+          color: #FFA81E;
+        }
+      }
+    }
   }
   .input-area{
-    display: flex;
-    flex-flow: row wrap;
-    align-content: flex-start;
-    flex-direction:row;
-    input{
-      flex: auto;
+    .send-input-box{
+      line-height: 54px;
+      display: flex;
+      flex-flow: row nowrap;
+      align-content: flex-start;
+      flex-direction:row;
+      border-radius:12px;
+      background-color: #E9ECF3;
+      input{
+        flex: auto;
+        line-height: 54px;
+        outline: none;
+        border:none;
+        font-size: 24px;
+        color: #323F49;
+        border-radius:12px;
+        background-color: #E9ECF3;
+        padding-left: 20px;
+        box-sizing: border-box;
+      }
+      .btn-send{
+        width: 64px;
+        border:none;
+        outline: none;
+        background-image: url(../assets/send.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 32px;
+        border-radius:12px;
+        background-color: #E9ECF3;
+      }
     }
   }
 }

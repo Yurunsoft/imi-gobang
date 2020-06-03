@@ -58,43 +58,6 @@
 
     <!-- 底部 -->
     <p class="footer">开源地址: <a href="https://github.com/Yurunsoft/IMI" target="_blank">https://github.com/Yurunsoft/IMI</a></p>
-    <!-- <h1>swoole协程开发框架</h1>
-
-    <div id="start">
-      <div v-if="logined">
-        <p v-if="GLOBAL">{{GLOBAL.userInfo.username}}</p>
-        <a id="btn-start" @click="start">开始游戏</a>
-      </div>
-      <template v-else>
-        <div><input id="input-username" type="text" placeholder="请输入昵称" v-model="username"/></div>
-        <div><input id="input-password" type="password" placeholder="请输入密码" v-model="password"/></div>
-        <div>
-          <a id="btn-login" @click="login">登录</a>
-        </div>
-        <div>
-          <a id="btn-register" @click="register">注册</a>
-        </div>
-      </template>
-    </div>
-
-    <p>基于 Vue 和 imi 分别开发前后端。</p>
-    <p>本教程主要着重于后端，所以前端简陋勿怪~</p>
-    <p>
-      视频教程免费连载更新地址：
-      <a href="https://space.bilibili.com/768718" target="_blank">https://space.bilibili.com/768718</a>
-    </p>
-    <h2>技术架构</h2>
-
-    <h3>后端</h3>
-    <p>
-      <a href="https://www.imiphp.com">imi 框架</a> (Http + WebSocket)
-    </p>
-    <p>
-      <a href="https://www.swoole.com">Swoole</a> (imi 框架基于 Swoole 开发)
-    </p>
-
-    <h3>前端</h3>
-    <p>Vue + Less</p> -->
   </div>
 </template>
 
@@ -294,10 +257,6 @@ h1 {
   line-height: 64px;
   margin-bottom: 0;
   -webkit-text-stroke: 1px rgba(0, 0, 0, 0.4);
-}
-h1,
-h2,
-h3 {
   text-align: center;
 }
 #start:extend(.center) {
