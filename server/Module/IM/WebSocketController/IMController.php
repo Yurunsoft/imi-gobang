@@ -17,13 +17,6 @@ use Imi\Server\Route\Annotation\WebSocket\WSController;
 class IMController extends WebSocketController
 {
     /**
-     * @Inject("IMLogic")
-     *
-     * @var \ImiApp\Module\IM\Logic\IMLogic
-     */
-    protected $imLogic;
-
-    /**
      * 加入房间
      *
      * @WSAction

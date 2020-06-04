@@ -157,23 +157,6 @@ export default {
 
 <style lang="less">
 @import "../style/style.less";
-.input{
-  background:rgba(248,248,248,1);
-  border:1px solid rgba(27,99,83,1);
-  border-radius:10px;
-  line-height: 54px;
-  font-size: 18px;
-  width: 100%;
-  margin-bottom: 30px;
-  padding: 0 10px;
-  box-sizing: border-box;
-  &::-ms-input-placeholder{
-    text-align: center;
-  }
-  &::-webkit-input-placeholder{
-    text-align: center;
-  }
-}
 .big-btn{
   background:linear-gradient(-18deg,rgba(67,234,128,1) 0%,rgba(56,248,212,1) 100%);
   border-radius:10px;

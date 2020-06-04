@@ -7,7 +7,7 @@
 
     <div>
       <h1>房间列表</h1>
-      <button id="btn-create-room" @click="createRoom"></button>
+      <button id="btn-create-room" @click="openCreateRoom"></button>
     </div>
 
     <!-- 房间列表 -->
@@ -31,6 +31,19 @@
 
     <!-- 聊天 -->
     <chat room="rooms" class="chat-box" :rows="5"></chat>
+
+    <!-- 创建房间层 -->
+    <div v-if="showCreateRoomLayer">
+      <div class="layer-mask" @click="closeCreateRoom"></div>
+      <div id="create-room-layer">
+        <p class="layer-title">创建房间</p>
+        <a class="btn-close-create-room" @click="closeCreateRoom"></a>
+        <div><input id="input-room-name" class="input" type="text" placeholder="请输入房间名称" v-model="roomName"/></div>
+        <div>
+          <a class="big-btn" id="btn-submit-create-room" @click="createRoom">创建</a>
+        </div>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -61,6 +74,8 @@ export default {
         //   "statusText": "对弈中",
         // }
       ],
+      showCreateRoomLayer: false,
+      roomName: '',
     };
   },
   mounted(){
@@ -86,10 +101,18 @@ export default {
     loadRoomList(){
       this.GLOBAL.websocketConnection.sendEx('room.list');
     },
+    // 打开创建房间窗口
+    openCreateRoom(){
+      this.showCreateRoomLayer = true;
+    },
+    // 关闭创建房间窗口
+    closeCreateRoom(){
+      this.showCreateRoomLayer = false;
+    },
     // 创建房间
     createRoom(){
       this.GLOBAL.websocketConnection.sendEx('room.create', {
-        title: 'test',
+        title: this.roomName,
       });
     },
     // 加入
@@ -177,7 +200,7 @@ h1{
     &::after{
       content: ' ';
       display: block;
-      background-image: url(/img/create-room.368ddd85.png);
+      background-image: url(../assets/create-room.png);
       background-size: 90%;
       background-position: center;
       background-repeat: no-repeat;
@@ -243,6 +266,41 @@ h1{
         margin-top: -10px;
       }
     }
+  }
+}
+#create-room-layer{
+  background-color: #fff;
+  border-radius:30px;
+  width: 500px;
+  height: 260px;
+  max-width: 100%;
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 40px 0 40px;
+  box-sizing: border-box;
+  .layer-title{
+    color:#323F49;
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 0;
+  }
+  .btn-close-create-room{
+    display: block;
+    width: 16px;
+    height: 16px;
+    background-image: url(../assets/close.png);
+    background-size: cover;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+  #input-room-name{
+    margin-top: 28px;
+  }
+  #btn-submit-create-room{
+    margin-top: 10px;
   }
 }
 </style>

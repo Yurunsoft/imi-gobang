@@ -33,7 +33,7 @@
         <button @click="leave">离开房间</button>
       </div>
     </template>
-    <chat class="chat-box" v-if="roomInfo" :room="roomInfo.id"></chat>
+    <chat class="chat-box" v-if="roomInfo" :room="roomInfo.roomId"></chat>
   </div>
 </template>
 
