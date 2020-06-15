@@ -1,39 +1,76 @@
 <template>
   <div class="gobang-box">
     <template v-if="roomInfo">
-      <p class="title">[<span v-text="roomInfo.statusText"></span>]<span v-text="roomInfo.title"></span></p>
-      <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
-      <div id="player-info-box">
-        <div>
-          玩家1
+      <p class="title">房间<span v-text="roomInfo.title"></span></p>
+      <div class="room-info-box">
+        <div class="left-box">
+          <p class="status" v-text="roomInfo.statusText"></p>
+          <p>观战：{{roomInfo.watchMemberIds.length}}</p>
         </div>
-        <div>
-          玩家2
-        </div>
-        <div id="player1-box">
-          <p v-if="roomInfo.player1"><span v-text="roomInfo.player1.username"></span><span v-if="roomInfo.player1Ready" class="readyed">🙋</span></p>
-          <p v-else>等待加入...</p>
-        </div>
-        <div id="player2-box">
-          <p v-if="roomInfo.player2"><span v-text="roomInfo.player2.username"></span><span v-if="roomInfo.player2Ready" class="readyed">🙋</span></p>
-          <p v-else>等待加入...</p>
+        <div class="player-box fr">
+          <div class="info-box fl">
+            <p class="username text-right" v-text="playerOther.username"></p>
+            <p class="ready-status text-right">
+              <template v-if="playerOther.playerId">
+                <span v-if="2 == roomInfo.status">对方颜色：{{playerOther.colorText}}</span>
+                <span v-else-if="playerOther.ready">已准备</span>
+                <span v-else>未准备</span>
+              </template>
+              <span v-else>等待加入</span>
+            </p>
+          </div>
+          <img class="player-thumb fr" style="margin-left: 12px" src="../assets/thumb.png"/>
         </div>
       </div>
-      <div class="button-box center">
-        <!-- 等待开始 -->
-        <template v-if="!watchMode">
+      <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
+      <div class="bottom-box">
+        <div class="player-box fl">
+          <div class="info-box fr">
+            <p class="username" v-text="playerMine.username"></p>
+            <p class="ready-status">
+              <template v-if="playerMine.playerId">
+                <span v-if="2 == roomInfo.status">你的颜色：{{playerMine.colorText}}</span>
+                <span v-else-if="playerMine.ready">已准备</span>
+                <span v-else>未准备</span>
+              </template>
+              <span v-else>等待加入</span>
+            </p>
+          </div>
+          <img class="player-thumb fl" style="margin-right: 12px;margin-top: 14px;" src="../assets/thumb.png"/>
+        </div>
+        <div class="fr">
           <template v-if="1 == roomInfo.status" class="center">
-            <button v-if="isReady" @click="cancelReady">取消准备</button>
-            <button v-else @click="ready">准备</button>
+            <button class="btn-cancel-ready" v-if="isReady" @click="cancelReady">取消准备</button>
+            <button class="btn-ready" v-else @click="ready">准备</button>
           </template>
-          <template v-if="2 == roomInfo.status">
-            <p>你的颜色：<span v-text="myColorText"></span></p>
-          </template>
-        </template>
-        <button @click="leave">离开房间</button>
+        </div>
       </div>
     </template>
-    <chat class="chat-box" v-if="roomInfo" :room="roomInfo.roomId"></chat>
+    <chat class="chat-box" v-if="roomInfo" :room="roomInfo.roomId" :rows="3"></chat>
+    <!-- 游戏结果 -->
+    <div v-if="showGameResultLayer">
+      <div class="layer-mask" @click="closeGameResultLayer"></div>
+      <div id="create-room-layer">
+        <div class="title">
+          <img src="../assets/victory.png" v-if="youWin"/>
+          <img src="../assets/defeat.png" v-else/>
+        </div>
+        <div class="win-box">
+          <div class="left">
+            <img class="player-thumb" src="../assets/thumb.png"/>
+            <p class="username" v-text="playerMine.username"></p>
+            <img v-if="youWin" class="right-top" src="../assets/win.png"/>
+            <img v-else class="right-top" src="../assets/lose.png"/>
+          </div>
+          <div class="right">
+            <img class="player-thumb" src="../assets/thumb.png"/>
+            <p class="username" v-text="gameResultOtherUsername"></p>
+            <img v-if="youWin" class="right-top" src="../assets/lose.png"/>
+            <img v-else class="right-top" src="../assets/win.png"/>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,9 +91,25 @@ export default {
       roomInfo: null,
       gameInfo: null,
       isReady: false,
-      myColor: null,
-      myColorText: '',
       watchMode: false,
+      playerOther: {
+        playerId: null,
+        username: '-',
+        ready: false,
+        color: null,
+        colorText: '',
+      },
+      playerMine: {
+        playerId: null,
+        username: '-',
+        ready: false,
+        color: null,
+        colorText: '',
+      },
+      win: false,
+      showGameResultLayer: false,
+      youWin: false,
+      gameResultOtherUsername: '',
     };
   },
   mounted(){
@@ -74,13 +127,15 @@ export default {
     this.GLOBAL.websocketConnection.onAction('room.cancelReady', this.onRoomCancelReady)
     this.GLOBAL.websocketConnection.onAction('room.destory', this.onRoomDestory)
     this.GLOBAL.websocketConnection.onAction('gobang.info', this.onGobangInfo)
-    console.log(params.roomInfo);
+    this.GLOBAL.websocketConnection.sendEx('room.info', {
+      roomId: this.roomInfo.roomId,
+    });
   },
   methods: {
     // 房间信息回调
     onJoinInfo(data){
       this.roomInfo = data.roomInfo;
-      this.updateMyColor();
+      this.updatePlayer();
       this.updateGobangDisable();
       console.log(data.roomInfo)
     },
@@ -124,50 +179,107 @@ export default {
         const game = data.game;
         this.gameInfo = game;
         this.$refs.gobang.setMap(game.gobangMap);
-        this.updateMyColor();
+        this.updatePlayer();
         this.updateGobangDisable();
       }
       if(data.winner)
       {
-        alert(data.winner.username + ' 赢啦！');
+        // alert(data.winner.username + ' 赢啦！');
+        this.gameResultOtherUsername = this.playerOther.username;
+        this.youWin = (data.winner.id === this.playerMine.playerId);
+        this.openGameResultLayer();
         this.isReady = false;
       }
     },
-    updateMyColor(){
-      if(!this.roomInfo || !this.gameInfo)
+    updatePlayer(){
+      if(!this.roomInfo)
       {
         return;
       }
+      console.log('aaa:', this.GLOBAL.userInfo, this.roomInfo);
       if(this.GLOBAL.userInfo.id === this.roomInfo.playerId1)
       {
-        this.myColor = this.gameInfo.player1Color;
+        this.playerMine.playerId = this.roomInfo.playerId1;
+        this.playerOther.playerId = this.roomInfo.playerId2;
+
+        this.playerMine.username = this.roomInfo.player1.username;
+        if(this.roomInfo.player2)
+        {
+          this.playerOther.username = this.roomInfo.player2.username;
+        }
+        else
+        {
+          this.playerOther.username = '';
+        }
+
+        this.playerMine.ready = this.roomInfo.player1Ready;
+        this.playerOther.ready = this.roomInfo.player2Ready;
+
+        if(this.gameInfo)
+        {
+          this.playerMine.color = this.gameInfo.player1Color;
+          this.playerOther.color = this.gameInfo.player2Color;
+        }
       }
       else if(this.GLOBAL.userInfo.id === this.roomInfo.playerId2)
       {
-        this.myColor = this.gameInfo.player2Color;
+        this.playerMine.playerId = this.roomInfo.playerId2;
+        this.playerOther.playerId = this.roomInfo.playerId1;
+
+        this.playerMine.username = this.roomInfo.player2.username;
+        if(this.roomInfo.player1)
+        {
+          this.playerOther.username = this.roomInfo.player1.username;
+        }
+        else
+        {
+          this.playerOther.username = '';
+        }
+
+        this.playerMine.ready = this.roomInfo.player2Ready;
+        this.playerOther.ready = this.roomInfo.player1Ready;
+
+        if(this.gameInfo)
+        {
+          this.playerMine.color = this.gameInfo.player2Color;
+          this.playerOther.color = this.gameInfo.player1Color;
+        }
       }
       else
       {
-        this.myColor = null;
+        this.playerMine.color = this.playerOther.color = null;
       }
-      this.$refs.gobang.setCurrentPiece(this.myColor)
-      switch(this.myColor)
+      // 颜色文字
+      switch(this.playerMine.color)
       {
         case piece.BLACK_PIECE:
-          this.myColorText = '黑';
+          this.playerMine.colorText = '黑';
           break;
         case piece.WHITE_PIECE:
-          this.myColorText = '白';
+          this.playerMine.colorText = '白';
           break;
         default:
-          this.myColorText = '';
+          this.playerMine.colorText = '';
           break;
       }
+      switch(this.playerOther.color)
+      {
+        case piece.BLACK_PIECE:
+          this.playerOther.colorText = '黑';
+          break;
+        case piece.WHITE_PIECE:
+          this.playerOther.colorText = '白';
+          break;
+        default:
+          this.playerOther.colorText = '';
+          break;
+      }
+      this.$refs.gobang.setCurrentPiece(this.playerMine.color)
     },
     updateGobangDisable(){
       if(this.gameInfo)
       {
-        this.gobang.disable = 1 === this.roomInfo.status || !(this.gameInfo.currentPiece === this.myColor)
+        this.gobang.disable = 1 === this.roomInfo.status || !(this.gameInfo.currentPiece === this.playerMine.color)
       }
     },
     onGo(point){
@@ -178,6 +290,13 @@ export default {
         x: point.x,
         y: point.y,
       });
+    },
+    openGameResultLayer(win){
+      this.win = win;
+      this.showGameResultLayer = true;
+    },
+    closeGameResultLayer(){
+      this.showGameResultLayer = false;
     },
   },
 };
@@ -192,10 +311,14 @@ export default {
   flex-direction:column;
   .chat-box{
     flex: auto;
+    margin-bottom: 6px;
   }
 }
 .title{
-  margin: 16px 0 4px 0;
+  margin: 14px 0 0 0;
+  color: #fff;
+  font-weight: bold;
+  font-size: 20px;
 }
 .center{
   text-align: center;
@@ -216,6 +339,100 @@ export default {
 .button-box{
   button{
     margin: 0 4px;
+  }
+}
+.room-info-box{
+  color: #fff;
+  .left-box{
+    float:left;
+    .status{
+      color: #FFEA00;
+    }
+  }
+  p{
+    margin: 10px 0;
+  }
+}
+.player-box{
+  color: #fff;
+  .ready-status{
+    color: #DEDEDE;
+  }
+  .player-thumb{
+    width: 56px;
+    height: 56px;
+    margin-top: 4px;
+  }
+  .username{
+    font-weight: bold;
+  }
+}
+.btn-ready, .btn-cancel-ready{
+  background: #f3f4f8;
+  border:none;
+  outline: none;
+  border-radius: 30px;
+  width: 122px;
+  line-height: 48px;
+  text-align: center;
+  font-size: 20px;
+  margin-top: 18px;
+}
+.btn-ready{
+  color: #43BB43;
+}
+.btn-cancel-ready{
+  color: #F24242;
+}
+#create-room-layer{
+  background-color: #fff;
+  border-radius:30px;
+  width: 500px;
+  max-width: 100%;
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  .title{
+    margin: 0;
+    padding: 18px 55px;
+    img{
+      max-width: 100%;
+    }
+  }
+  .win-box{
+    display: flex;
+    text-align: center;
+    height: 164px;
+    .left{
+      width: 50%;
+      background:rgba(233,236,243,1);
+      border-radius:0px 0px 0px 30px;
+      color: #323F49;
+      font-weight: bold;
+      position: relative;
+    }
+    .right{
+      width: 50%;
+      background:rgba(74,82,99,1);
+      border-radius:0px 0px 30px 0px;
+      color: #fff;
+      font-weight: bold;
+      position: relative;
+    }
+    .player-thumb{
+      width: 56px;
+      height: 56px;
+      margin-top: 40px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 100%;
+    }
+    .right-top{
+      width: 60px;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   }
 }
 </style>

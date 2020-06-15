@@ -51,7 +51,7 @@
         <div><input id="input-username" class="input" type="text" placeholder="请输入昵称" v-model="username"/></div>
         <div><input id="input-password" class="input" type="password" placeholder="请输入密码" v-model="password"/></div>
         <div>
-          <a class="big-btn" id="btn-login-submit" @click="login">注册</a>
+          <a class="big-btn" id="btn-login-submit" @click="register">注册</a>
         </div>
       </div>
     </div>
@@ -120,6 +120,7 @@ export default {
         if(0 === result.code)
         {
           this.password = '';
+          this.closeRegister();
           alert('注册成功，请再次输入密码登录');
         }
       })

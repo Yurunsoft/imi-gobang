@@ -30,7 +30,7 @@
     </ul>
 
     <!-- 聊天 -->
-    <chat room="rooms" class="chat-box" :rows="5"></chat>
+    <chat room="rooms" class="chat-box" :rows="5" style="margin-top:16px"></chat>
 
     <!-- 创建房间层 -->
     <div v-if="showCreateRoomLayer">

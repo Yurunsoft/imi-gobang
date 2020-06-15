@@ -17,7 +17,7 @@ export default {
     // 线条颜色
     lineColor: {
       type: String,
-      default: '#333',
+      default: '#AC9D6A',
     },
     // 是否禁用
     disable:{
@@ -61,60 +61,69 @@ export default {
       }
     },
     paint() {
-      Promise.all([
-        this.loadImage(require("@/assets/bg.jpg")),
-      ]).then(imgs => {
+      // Promise.all([
+      //   this.loadImage(require("@/assets/bg.jpg")),
+      // ]).then(imgs => {
         this.canvasObj = this.$refs.canvas;
         const canvasRect = this.canvasObj.getBoundingClientRect();
         this.canvasObj.width = canvasRect.width;
         this.canvasObj.height = canvasRect.height;
 
         const context = this.canvasObj.getContext("2d");
-        this.drawBg(context, imgs[0]);
+        // this.drawBg(context, imgs[0]);
+        this.drawBgColor(context);
         this.drawLines(context);
         this.drawPieces(context);
-      });
+      // });
     },
     // 绘制底图
     drawBg(context, img){
       const canvasRect = this.canvasObj.getBoundingClientRect();
       context.drawImage(img, 0, 0, canvasRect.width, canvasRect.height)
     },
+    // 画底色
+    drawBgColor(context){
+      const canvasRect = this.canvasObj.getBoundingClientRect();
+      context.fillStyle = '#C0AF75';
+      context.fillRect(0, 0, canvasRect.width, canvasRect.height);
+    },
     // 绘制线条
     drawLines(context){
       const canvasRect = this.canvasObj.getBoundingClientRect();
-      console.log(canvasRect)
       this.cellWidth = (canvasRect.width - (this.canvasPadding * 2)) / (this.size - 1);
       this.cellHeight = (canvasRect.height - (this.canvasPadding * 2)) / (this.size - 1);
-      // 绘制横向线条
       this.xBegin = parseInt(this.canvasPadding) + 0.5;
       const hX2 = parseInt(canvasRect.width - this.canvasPadding) + 0.5;
+      this.yBegin = parseInt(this.canvasPadding) + 0.5;
+      const hY2 = parseInt(canvasRect.height - this.canvasPadding) + 0.5;
+      // 绘制格子底色
+      context.fillStyle = '#F4EAC8';
+      context.fillRect(this.xBegin, this.yBegin, hX2 - this.canvasPadding, hY2 - this.canvasPadding);
+      // 绘制横向线条
       for (let i = 0; i < this.size; ++i)
       {
         for (let j = 0; j < this.size; ++j)
         {
-          const y = parseInt(this.canvasPadding + j * (this.cellHeight)) + 0.5
+          const y = parseInt(this.canvasPadding + j * (this.cellHeight))
           context.beginPath();
           context.moveTo(this.xBegin, y)
           context.lineTo(hX2, y)
           context.strokeStyle = this.lineColor
-          context.lineWidth = 1;
+          context.lineWidth = 2;
           context.stroke()
         }
       }
       // 绘制竖向线条
-      this.yBegin = parseInt(this.canvasPadding) + 0.5;
-      const hY2 = parseInt(canvasRect.height - this.canvasPadding) + 0.5;
       for (let i = 0; i < this.size; ++i)
       {
         for (let j = 0; j < this.size; ++j)
         {
-          const x = parseInt(this.canvasPadding + j * (this.cellWidth)) + 0.5
+          const x = parseInt(this.canvasPadding + j * (this.cellWidth))
           context.beginPath();
           context.moveTo(x, this.yBegin)
           context.lineTo(x, hY2)
           context.strokeStyle = this.lineColor
-          context.lineWidth = 1;
+          context.lineWidth = 2;
           context.stroke()
         }
       }
@@ -194,10 +203,10 @@ export default {
 
 <style lang="less" scoped>
 .gobang {
-  padding-top: 14px;
   .gobang-canvas {
     width: calc(100vw - 32px);
     height: calc(100vw - 32px);
+    border-radius: 14px;
   }
 }
 </style>

@@ -22,7 +22,6 @@ export default {
   name: "Chat",
   props: {
     room: {
-      type: String,
     },
     rows: {
       type: Number,
@@ -95,7 +94,7 @@ export default {
   .chat-content{
     width: 100%;
     box-sizing: border-box;
-    // flex:auto;
+    flex:auto;
     border:none;
     background:rgba(0,0,0,0.5);
     border-radius:8px;
@@ -105,6 +104,7 @@ export default {
     color: #fff;
     overflow: auto;
     margin-bottom: 6px;
+    margin-top: 0;
     li{
       word-break: break-word;
       line-height: 24px;
@@ -117,15 +117,15 @@ export default {
   }
   .input-area{
     .send-input-box{
-      line-height: 54px;
+      line-height: 48px;
       display: flex;
       flex-flow:row;
-      border-radius:12px;
+      border-radius:10px;
       background-color: #E9ECF3;
       input{
         flex: 1;
         width: 100%;
-        line-height: 54px;
+        line-height: 48px;
         outline: none;
         border:none;
         font-size: 24px;

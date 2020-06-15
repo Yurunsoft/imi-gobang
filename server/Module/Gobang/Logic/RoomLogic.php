@@ -196,6 +196,7 @@ class RoomLogic
                     $winnerMemberId = $room->getPlayerId1();
                 }
                 $winner = $this->memberService->get($winnerMemberId);
+                $room->save();
                 $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
                     'winner'    =>  $winner,
                 ]);
@@ -289,6 +290,16 @@ class RoomLogic
             return;
         }
         $this->leave($memberId, $roomId);
+    }
+
+    /**
+     * Get the value of roomService
+     *
+     * @return \ImiApp\Module\Gobang\Service\RoomService
+     */ 
+    public function getRoomService()
+    {
+        return $this->roomService;
     }
 
 }

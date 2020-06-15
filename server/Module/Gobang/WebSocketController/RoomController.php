@@ -42,6 +42,23 @@ class RoomController extends WebSocketController
     }
 
     /**
+     * 获取房间信息
+     *
+     * @WSAction
+     * @WSRoute({"action"="room.info"})
+     * 
+     * @param array $data
+     * @return void
+     */
+    public function info($data)
+    {
+        return [
+            'action'    =>  MessageActions::ROOM_INFO,
+            'roomInfo'  =>  $this->roomLogic->getRoomService()->getInfo($data['roomId']),
+        ];
+    }
+
+    /**
      * 创建房间
      *
      * @WSAction
