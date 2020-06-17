@@ -43,7 +43,7 @@
           <img class="player-thumb fl" style="margin-right: 12px;margin-top: 14px;" src="../assets/thumb.png"/>
         </div>
         <div class="btn-box">
-          <template v-if="1 == roomInfo.status" class="center">
+          <template v-if="1 == roomInfo.status && !watchMode" class="center">
             <button class="btn-cancel-ready" v-if="isReady" @click="cancelReady">取消准备</button>
             <button class="btn-ready" v-else @click="ready">准备</button>
           </template>
@@ -234,7 +234,7 @@ export default {
           this.playerOther.color = this.gameInfo.player2Color;
         }
       }
-      else if(this.GLOBAL.userInfo.id === this.roomInfo.playerId2)
+      else// if(this.GLOBAL.userInfo.id === this.roomInfo.playerId2)
       {
         this.playerMine.playerId = this.roomInfo.playerId2;
         this.playerOther.playerId = this.roomInfo.playerId1;
@@ -257,10 +257,6 @@ export default {
           this.playerMine.color = this.gameInfo.player2Color;
           this.playerOther.color = this.gameInfo.player1Color;
         }
-      }
-      else
-      {
-        this.playerMine.color = this.playerOther.color = null;
       }
       // 颜色文字
       switch(this.playerMine.color)
