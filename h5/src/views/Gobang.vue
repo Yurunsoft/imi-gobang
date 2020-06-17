@@ -184,7 +184,12 @@ export default {
       {
         const game = data.game;
         this.gameInfo = game;
-        this.$refs.gobang.setMap(game.gobangMap);
+        this.$nextTick(()=>{
+          if(this.$refs.gobang)
+          {
+            this.$refs.gobang.setMap(game.gobangMap);
+          }
+        })
         this.updatePlayer();
         this.updateGobangDisable();
       }
@@ -282,10 +287,12 @@ export default {
           this.playerOther.colorText = '';
           break;
       }
-      if(this.$refs.gobang)
-      {
-        this.$refs.gobang.setCurrentPiece(this.playerMine.color)
-      }
+      this.$nextTick(()=>{
+        if(this.$refs.gobang)
+        {
+          this.$refs.gobang.setCurrentPiece(this.playerMine.color)
+        }
+      })
     },
     updateGobangDisable(){
       if(this.gameInfo)
