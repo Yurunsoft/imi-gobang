@@ -68,6 +68,24 @@ class GobangGameModel extends RedisModel
     protected $currentPiece;
 
     /**
+     * 最后落子的坐标X
+     *
+     * @Column
+     *
+     * @var int
+     */
+    protected $lastGoX;
+
+    /**
+     * 最后落子的坐标Y
+     *
+     * @Column
+     *
+     * @var int
+     */
+    protected $lastGoY;
+
+    /**
      * 初始化棋盘
      *
      * @return void
@@ -95,6 +113,8 @@ class GobangGameModel extends RedisModel
     public function setCell(int $x, int $y, int $value)
     {
         $this->gobangMap[$x][$y] = $value;
+        $this->lastGoX = $x;
+        $this->lastGoY = $y;
     }
 
     /**
@@ -286,6 +306,54 @@ class GobangGameModel extends RedisModel
     public function setRoomId(int $roomId)
     {
         $this->roomId = $roomId;
+
+        return $this;
+    }
+
+    /**
+     * Get 最后落子的坐标X
+     *
+     * @return int
+     */ 
+    public function getLastGoX()
+    {
+        return $this->lastGoX;
+    }
+
+    /**
+     * Set 最后落子的坐标X
+     *
+     * @param int $lastGoX  最后落子的坐标X
+     *
+     * @return self
+     */ 
+    public function setLastGoX(?int $lastGoX)
+    {
+        $this->lastGoX = $lastGoX;
+
+        return $this;
+    }
+
+    /**
+     * Get 最后落子的坐标Y
+     *
+     * @return int
+     */ 
+    public function getLastGoY()
+    {
+        return $this->lastGoY;
+    }
+
+    /**
+     * Set 最后落子的坐标Y
+     *
+     * @param int $lastGoY  最后落子的坐标Y
+     *
+     * @return self
+     */ 
+    public function setLastGoY(?int $lastGoY)
+    {
+        $this->lastGoY = $lastGoY;
 
         return $this;
     }

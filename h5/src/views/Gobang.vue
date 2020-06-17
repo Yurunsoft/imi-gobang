@@ -24,7 +24,7 @@
       </div>
       <!-- 棋盘 -->
       <div class="gobang-area">
-        <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
+        <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo" :lastGoX="gameInfo.lastGoX" :lastGoY="gameInfo.lastGoY"></gobang>
         <img class="img-wait" src="../assets/wait.png" v-if="1 == roomInfo.status"/>
       </div>
       <div class="bottom-box">
@@ -42,11 +42,12 @@
           </div>
           <img class="player-thumb fl" style="margin-right: 12px;margin-top: 14px;" src="../assets/thumb.png"/>
         </div>
-        <div class="fr">
+        <div class="btn-box">
           <template v-if="1 == roomInfo.status" class="center">
             <button class="btn-cancel-ready" v-if="isReady" @click="cancelReady">取消准备</button>
             <button class="btn-ready" v-else @click="ready">准备</button>
           </template>
+          <button class="btn-leave" @click="leave"></button>
         </div>
       </div>
     </template>
@@ -94,7 +95,10 @@ export default {
         disable: true,
       },
       roomInfo: null,
-      gameInfo: null,
+      gameInfo: {
+        lastGoX: null,
+        lastGoY: null,
+      },
       isReady: false,
       watchMode: false,
       playerOther: {
@@ -130,6 +134,7 @@ export default {
     this.GLOBAL.websocketConnection.onAction('room.ready', this.onRoomReady)
     this.GLOBAL.websocketConnection.onAction('room.cancelReady', this.onRoomCancelReady)
     this.GLOBAL.websocketConnection.onAction('room.destory', this.onRoomDestory)
+    this.GLOBAL.websocketConnection.onAction('room.leave', this.onLeave)
     this.GLOBAL.websocketConnection.onAction('gobang.info', this.onGobangInfo)
     this.GLOBAL.websocketConnection.sendEx('room.info', {
       roomId: this.roomInfo.roomId,
@@ -153,7 +158,6 @@ export default {
       this.GLOBAL.websocketConnection.sendEx('room.leave', {
         roomId: this.roomInfo.roomId,
       });
-      this.$router.replace("/rooms")
     },
     // 准备回调
     onRoomReady(data){
@@ -192,6 +196,9 @@ export default {
         this.openGameResultLayer();
         this.isReady = false;
       }
+    },
+    onLeave(data){
+      this.$router.replace("/rooms")
     },
     updatePlayer(){
       if(!this.roomInfo)
@@ -367,6 +374,11 @@ export default {
     font-weight: bold;
   }
 }
+.btn-box{
+  float:right;
+  display:flex;
+  padding-top: 18px;
+}
 .btn-ready, .btn-cancel-ready{
   background: #f3f4f8;
   border:none;
@@ -376,13 +388,24 @@ export default {
   line-height: 48px;
   text-align: center;
   font-size: 20px;
-  margin-top: 18px;
 }
 .btn-ready{
   color: #43BB43;
 }
 .btn-cancel-ready{
   color: #F24242;
+}
+.btn-leave{
+  border:none;
+  outline: none;
+  border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  background-image: url(../assets/leave.png);
+  background-position: center center;
+  background-size: 32px;
+  background-repeat: no-repeat;
+  margin-left: 10px;
 }
 #create-room-layer{
   background-color: #fff;

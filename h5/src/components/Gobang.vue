@@ -23,7 +23,13 @@ export default {
     disable:{
       type: Boolean,
       default: false,
-    }
+    },
+    lastGoX:{
+      type: Number,
+    },
+    lastGoY:{
+      type: Number,
+    },
   },
   data() {
     return {
@@ -144,6 +150,15 @@ export default {
           }
           var point = this.getPointXY(i, j);
           const pieceSize = 24;
+          // 画最后下子的圈圈
+          if(this.lastGoX == i && this.lastGoY == j)
+          {
+            context.beginPath();
+            context.fillStyle = '#70c769';
+            context.arc(point.x - 1, point.y - 1, pieceSize / 2 + 2, 0, 2 * Math.PI);
+            context.fill();
+          }
+          // 画棋子
           context.drawImage(img, point.x - pieceSize / 2, point.y - pieceSize / 2, pieceSize, pieceSize)
         }
       }

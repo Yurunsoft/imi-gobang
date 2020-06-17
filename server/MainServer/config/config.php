@@ -7,6 +7,7 @@ return [
     // bean扫描目录
     'beanScan'    =>    [
         'ImiApp\MainServer\HttpController',
+        'ImiApp\MainServer\WebSocketController',
         'ImiApp\MainServer\Aop',
         'ImiApp\MainServer\Middleware',
         'ImiApp\Enum',

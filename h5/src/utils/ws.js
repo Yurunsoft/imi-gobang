@@ -4,6 +4,7 @@ export default class WS {
         this.connected = false;
         this.incr = 0;
         this.onActions = {};
+        this.pingTimer = null;
     }
     open(url, callback = null){
         if(this.connected)
@@ -22,6 +23,9 @@ export default class WS {
  
         this.ws.onopen = (evt) => {
             this.connected = true;
+            this.pingTimer = setInterval(()=>{
+                this.sendEx('ping');
+            }, 30000);
             callback();
         };
         
@@ -57,6 +61,7 @@ export default class WS {
         this.ws.onclose = (evt) => {
             // messageCache.push("Connection closed\r\n");
             this.connected = false;
+            clearInterval(this.pingTimer);
         };
         
         this.ws.onerror = (evt) => {
