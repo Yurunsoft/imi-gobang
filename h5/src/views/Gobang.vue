@@ -282,7 +282,10 @@ export default {
           this.playerOther.colorText = '';
           break;
       }
-      this.$refs.gobang.setCurrentPiece(this.playerMine.color)
+      if(this.$refs.gobang)
+      {
+        this.$refs.gobang.setCurrentPiece(this.playerMine.color)
+      }
     },
     updateGobangDisable(){
       if(this.gameInfo)
