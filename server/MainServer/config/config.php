@@ -60,6 +60,7 @@ return [
         'ConnectContextRedis'    =>    [
             'redisPool' =>  'redis',
             'lockId'    =>  'redis',
+            'key'       => 'imi:gobang:connect_context', // 键
         ],
         'OptionsMiddleware' =>  [
             // 设置允许的 Origin，为 null 时允许所有，为数组时允许多个
@@ -87,6 +88,15 @@ return [
         ],
         'HttpErrorHandler'    =>    [
             'handler'   => \ImiApp\MainServer\ErrorHandler\HttpErrorHandler::class,
+        ],
+        // 连接绑定器
+        'ConnectionBinder'  =>  [
+            // Redis 连接池名称
+            'redisPool' =>  'redis',
+            // redis中第几个库
+            'redisDb'   =>  0,
+            // 键，多个服务共用 redis 请设为不同的，不然会冲突
+            'key'       =>  'imi:gobang:connectionBinder:map',
         ],
     ],
 ];

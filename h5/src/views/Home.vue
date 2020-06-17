@@ -87,7 +87,7 @@ export default {
         url: '/member/status',
         excludeCodes: [1001],
       }).then((result) => {
-        this.GLOBAL.userInfo = result.data;
+        window.localStorage['userInfo'] = this.GLOBAL.userInfo = result.data;
         this.logined = 0 === result.code;
       })
     },

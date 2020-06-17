@@ -39,22 +39,43 @@ export default {
       chatRecords: [],
       // 聊天内容区样式
       chatContentStyle: '',
+      timer: null,
     };
   },
   mounted() {
     this.wsConn = new WS
-    this.wsConn.open(process.env.VUE_APP_IM_WEBSOCKET_URL, ()=>{
-      this.wsConn.sendEx('im.joinRoom', {
-        roomId: this.room,
-      });
-    });
     this.wsConn.onAction('im.receive', this.onReceive)
+    this.wsConn.onClose((evt)=>{
+      this.chatRecords.push({
+        action: 'im.receive',
+        sender: '系统消息',
+        type: 1,
+        content: '断线重连...',
+      });
+      if(false !== this.timer)
+      {
+        // this.timer = setTimeout(this.openConn, 3000);
+      }
+    })
+    this.openConn()
     this.chatContentStyle = 'height:' + (24 * this.rows + 20) + 'px';
   },
   beforeDestroy(){
+    if(this.timer)
+    {
+      clearTimeout(this.timer)
+    }
+    this.timer = false;
     this.wsConn.close();
   },
   methods: {
+    openConn(){
+      this.wsConn.open(process.env.VUE_APP_IM_WEBSOCKET_URL, ()=>{
+        this.wsConn.sendEx('im.joinRoom', {
+          roomId: this.room,
+        });
+      });
+    },
     // 发送内容
     sendContent(){
       if('' === this.inputContent)
@@ -68,8 +89,19 @@ export default {
       this.inputContent = '';
     },
     // 接收内容
-    onReceive(data){
+    onReceive(data, allowRetry = true){
       const chatContent = this.$refs.chatContent;
+      if(!chatContent)
+      {
+        if(!allowRetry)
+        {
+          return;
+        }
+        this.$nextTick(()=>{
+          this.onReceive(data, false)
+        })
+        return;
+      }
       const willScroll = chatContent.scrollHeight - chatContent.scrollTop === chatContent.clientHeight;
       if(this.chatRecords.length >= 100)
       {

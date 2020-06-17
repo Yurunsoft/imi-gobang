@@ -7,6 +7,8 @@ Vue.config.productionTip = false
 
 Vue.prototype.GLOBAL = global
 
+global.userInfo = window.localStorage['userInfo']
+
 new Vue({
   router,
   render: function (h) { return h(App) }

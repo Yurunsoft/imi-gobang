@@ -139,6 +139,10 @@ export default {
     this.GLOBAL.websocketConnection.sendEx('room.info', {
       roomId: this.roomInfo.roomId,
     });
+    this.GLOBAL.websocketConnection.onClose((evt)=>{
+      alert('断线了')
+      location.reload()
+    })
   },
   methods: {
     // 房间信息回调

@@ -31,7 +31,22 @@ class HandShakeController extends HttpController
         // 握手处理，什么都不做，框架会帮你做好
         /** @var \ImiApp\Module\Member\Service\MemberSessionService $memberSession */
         $memberSession = RequestContext::getBean('MemberSessionService');
-        ConnectContext::set('memberId', $memberSession->getMemberId());
+        $memberId = $memberSession->getMemberId();
+        ConnectContext::set('memberId', $memberId);
+        $flag = 'ws-' . $memberId;
+        $currentFd = $this->request->getSwooleRequest()->fd;
+        if(!ConnectContext::bindNx($flag, $currentFd))
+        {
+            $fd = ConnectContext::getFdByFlag($flag);
+            if($fd)
+            {
+                $this->request->getServerInstance()->getSwooleServer()->close($fd);
+            }
+            if(!ConnectContext::bindNx($flag, $currentFd))
+            {
+                $this->request->getServerInstance()->getSwooleServer()->close($currentFd);
+            }
+        }
     }
 
 }

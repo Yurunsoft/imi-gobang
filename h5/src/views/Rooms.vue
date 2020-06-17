@@ -95,6 +95,10 @@ export default {
     this.GLOBAL.websocketConnection.onAction('room.create', this.onCreateRoom)
     this.GLOBAL.websocketConnection.onAction('room.join', this.onJoinRoom)
     this.GLOBAL.websocketConnection.onAction('room.watch', this.onWatchRoom)
+    this.GLOBAL.websocketConnection.onClose((evt)=>{
+      alert('断线了')
+      location.reload()
+    })
   },
   methods: {
     // 加载房间列表

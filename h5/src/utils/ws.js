@@ -5,6 +5,8 @@ export default class WS {
         this.incr = 0;
         this.onActions = {};
         this.pingTimer = null;
+        this.onCloseListener = null;
+        this.onErrorListener = null;
     }
     open(url, callback = null){
         if(this.connected)
@@ -62,10 +64,19 @@ export default class WS {
             // messageCache.push("Connection closed\r\n");
             this.connected = false;
             clearInterval(this.pingTimer);
+            if(this.onCloseListener)
+            {
+                this.onCloseListener(evt)
+            }
         };
         
         this.ws.onerror = (evt) => {
             // messageCache.push("Connection closed\r\n");
+            console.error(evt)
+            if(this.onErrorListener)
+            {
+                this.onErrorListener(evt)
+            }
         };
     }
     close(){
@@ -95,6 +106,12 @@ export default class WS {
             this.onActions[action] = [];
         }
         this.onActions[action].push(callback);
+    }
+    onClose(callback){
+        this.onCloseListener = callback;
+    }
+    onError(callback){
+        this.onErrorListener = callback;
     }
 }
   
