@@ -4,7 +4,7 @@
     <div class="center">
       <img alt="Vue logo" class="logo" src="../assets/logo.png" />
     </div>
-    <h1>imi 高性能协程应用开发框架</h1>
+    <h1>基于 PHP Swoole 的高性能协程应用开发框架——imi</h1>
     <div class="center">
       <img class="img-title" src="../assets/title.png" />
     </div>
@@ -57,7 +57,10 @@
     </div>
 
     <!-- 底部 -->
-    <p class="footer">开源地址: <a href="https://github.com/Yurunsoft/IMI" target="_blank">https://github.com/Yurunsoft/IMI</a></p>
+    <div class="footer">
+      <p>开源地址: <a href="https://github.com/Yurunsoft/IMI" target="_blank">https://github.com/Yurunsoft/IMI</a>(作者：宇润)</p>
+      <p>本项目仅做学习用途，禁止用于商业用途！</p>
+    </div>
   </div>
 </template>
 
@@ -242,6 +245,8 @@ h1 {
   margin-bottom: 0;
   -webkit-text-stroke: 1px rgba(0, 0, 0, 0.4);
   text-align: center;
+  line-height: 48px;
+  margin-bottom: 20px;
 }
 #start:extend(.center) {
   margin: 36px 0;
@@ -262,6 +267,7 @@ h1 {
   }
 }
 .footer{
+  left: 0;
   color: #fff;
   position: fixed;
   bottom: 0;
