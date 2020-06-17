@@ -79,6 +79,8 @@ class MemberService
         $record = $this->getByUsername($username);
         if(password_verify($password, $record->password))
         {
+            $record->lastLoginTime = date('Y-m-d H:i:s');
+            $record->save();
             Session::set('memberId', $record->id);
         }
         else
