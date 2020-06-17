@@ -26,10 +26,15 @@ class OnClose implements ICloseEventListener
      */
     public function handle(CloseEventParam $e)
     {
-        $memberId = ConnectContext::get('memberId');
-        if($memberId)
+        /** @var \Imi\Server\Http\Route\RouteResult $httpRouteResult */
+        $httpRouteResult = ConnectContext::get('httpRouteResult');
+        if('/ws' === ($httpRouteResult->routeItem->annotation ?? null))
         {
-            $this->roomLogic->onMemberClose($memberId);
+            $memberId = ConnectContext::get('memberId');
+            if($memberId)
+            {
+                $this->roomLogic->onMemberClose($memberId);
+            }
         }
     }
 

@@ -3,7 +3,8 @@
     <!-- <textarea class="chat-content" contentEditable="true" readonly v-text="chatContent" ></textarea> -->
     <ul ref="chatContent" class="chat-content" :style="chatContentStyle">
       <li v-for="(item, index) in chatRecords">
-        <span class="sender"><span v-text="item.sender"></span>: </span>
+        <span class="sender sender-system" v-if="1 == item.type"><span v-text="item.sender"></span>: </span>
+        <span class="sender sender-chat" v-if="2 == item.type"><span v-text="item.sender"></span>: </span>
         <span v-text="item.content"></span>
       </li>
     </ul>
@@ -110,6 +111,9 @@ export default {
       span{
         &.sender{
           color: #FFA81E;
+          &.sender-system{
+            color: #E74856;
+          }
         }
       }
     }

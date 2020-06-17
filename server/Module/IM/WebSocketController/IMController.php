@@ -4,6 +4,7 @@ namespace ImiApp\Module\IM\WebSocketController;
 use Imi\Server\Server;
 use Imi\RequestContext;
 use Imi\Aop\Annotation\Inject;
+use ImiApp\Module\IM\Enum\MessageType;
 use Imi\Controller\WebSocketController;
 use ImiApp\Module\IM\Enum\MessageActions;
 use Imi\Server\Route\Annotation\WebSocket\WSRoute;
@@ -27,7 +28,17 @@ class IMController extends WebSocketController
      */
     public function joinRoom($data)
     {
-        $this->server->joinGroup('im.room.' . $data['roomId'], $this->frame->getFd());
+        $group = 'im.room.' . $data['roomId'];
+        $this->server->joinGroup($group, $this->frame->getFd());
+        /** @var \ImiApp\Module\Member\Service\MemberSessionService $memberSession */
+        $memberSession = RequestContext::getBean('MemberSessionService');
+        Server::sendToGroup($group, [
+            'action'    =>  MessageActions::IM_RECEIVE,
+            'sender'    =>  '系统消息',
+            'type'      =>  MessageType::SYSTEM,
+            'content'   =>  $memberSession->getMemberInfo()->username . ' 进来了',
+            'time'      =>  date('Y-m-d H:i:s'),
+        ]);
         return [
             'action'    =>  MessageActions::IM_JOIN_ROOM,
         ];
@@ -61,6 +72,7 @@ class IMController extends WebSocketController
         defer(function() use($sender, $content, $time, $roomId){
             Server::sendToGroup('im.room.' . $roomId, [
                 'action'    =>  MessageActions::IM_RECEIVE,
+                'type'      =>  MessageType::CHAT,
                 'sender'    =>  $sender,
                 'content'   =>  $content,
                 'time'      =>  $time,
