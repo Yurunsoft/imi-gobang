@@ -187,7 +187,7 @@ class RoomLogic
                 $room->setStatus(GobangStatus::WAIT_START);
                 $room->setPlayer1Ready(false);
                 $room->setPlayer2Ready(false);
-                if($memberId === $room->getPlayerId1())
+                if(0 === $room->getPlayerId1())
                 {
                     $winnerMemberId = $room->getPlayerId2();
                 }

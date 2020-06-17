@@ -22,7 +22,11 @@
           <img class="player-thumb fr" style="margin-left: 12px" src="../assets/thumb.png"/>
         </div>
       </div>
-      <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
+      <!-- 棋盘 -->
+      <div class="gobang-area">
+        <gobang ref="gobang" :disable="gobang.disable" v-on:go="onGo"></gobang>
+        <img class="img-wait" src="../assets/wait.png" v-if="1 == roomInfo.status"/>
+      </div>
       <div class="bottom-box">
         <div class="player-box fl">
           <div class="info-box fr">
@@ -46,6 +50,7 @@
         </div>
       </div>
     </template>
+    <!-- 聊天 -->
     <chat class="chat-box" v-if="roomInfo" :room="roomInfo.roomId" :rows="3"></chat>
     <!-- 游戏结果 -->
     <div v-if="showGameResultLayer">
@@ -114,7 +119,6 @@ export default {
   },
   mounted(){
     const params = this.$route.params;
-    console.log(params)
     if(!params.roomInfo)
     {
       this.$router.replace('/');
@@ -137,7 +141,6 @@ export default {
       this.roomInfo = data.roomInfo;
       this.updatePlayer();
       this.updateGobangDisable();
-      console.log(data.roomInfo)
     },
     // 准备
     ready(){
@@ -173,7 +176,6 @@ export default {
     },
     // 对战信息回调
     onGobangInfo(data){
-      console.log(data)
       if(data.game)
       {
         const game = data.game;
@@ -196,7 +198,6 @@ export default {
       {
         return;
       }
-      console.log('aaa:', this.GLOBAL.userInfo, this.roomInfo);
       if(this.GLOBAL.userInfo.id === this.roomInfo.playerId1)
       {
         this.playerMine.playerId = this.roomInfo.playerId1;
@@ -283,7 +284,6 @@ export default {
       }
     },
     onGo(point){
-      console.log(point.x, point.y);
       this.gobang.disable = true;
       this.GLOBAL.websocketConnection.sendEx('gobang.go', {
         roomId: this.roomInfo.roomId,
@@ -433,6 +433,16 @@ export default {
       top: 0;
       right: 0;
     }
+  }
+}
+.gobang-area{
+  position: relative;
+  .img-wait{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 284px;
   }
 }
 </style>

@@ -78,8 +78,6 @@ class GobangLogic
             $room->setPlayer2Ready(false);
             $room->setStatus(GobangStatus::WAIT_START);
             $room->save();
-            // TODO:用户信息$winnerMemberId
-            // $data['content'] = sprintf('胜者 %s', )
             $data['winner'] = $this->memberService->get($winnerMemberId);
             defer(function() use($roomId, $room){
                 $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [

@@ -6,7 +6,6 @@ export default class WS {
         this.onActions = {};
     }
     open(url, callback = null){
-        console.log(this.connected)
         if(this.connected)
         {
             return;
@@ -22,14 +21,11 @@ export default class WS {
         }
  
         this.ws.onopen = (evt) => {
-            console.log('onopen', evt)
             this.connected = true;
             callback();
-            console.log(this.connected)
         };
         
         this.ws.onmessage = (evt) => {
-            console.log(evt)
             const data = JSON.parse(evt.data);
             const action = undefined !== data.action ? data.action : '';
             const code = undefined !== data.code ? data.code : 0;
@@ -59,14 +55,11 @@ export default class WS {
         };
         
         this.ws.onclose = (evt) => {
-            console.log(evt)
             // messageCache.push("Connection closed\r\n");
             this.connected = false;
-            console.log(this.connected)
         };
         
         this.ws.onerror = (evt) => {
-            console.log(evt)
             // messageCache.push("Connection closed\r\n");
         };
     }

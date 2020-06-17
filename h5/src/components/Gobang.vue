@@ -61,25 +61,20 @@ export default {
       }
     },
     paint() {
-      // Promise.all([
-      //   this.loadImage(require("@/assets/bg.jpg")),
-      // ]).then(imgs => {
+      Promise.all([
+        this.loadImage(require("@/assets/black.png")),
+        this.loadImage(require("@/assets/white.png")),
+      ]).then(imgs => {
         this.canvasObj = this.$refs.canvas;
         const canvasRect = this.canvasObj.getBoundingClientRect();
         this.canvasObj.width = canvasRect.width;
         this.canvasObj.height = canvasRect.height;
 
         const context = this.canvasObj.getContext("2d");
-        // this.drawBg(context, imgs[0]);
         this.drawBgColor(context);
         this.drawLines(context);
-        this.drawPieces(context);
-      // });
-    },
-    // 绘制底图
-    drawBg(context, img){
-      const canvasRect = this.canvasObj.getBoundingClientRect();
-      context.drawImage(img, 0, 0, canvasRect.width, canvasRect.height)
+        this.drawPieces(context, imgs[0], imgs[1]);
+      });
     },
     // 画底色
     drawBgColor(context){
@@ -129,7 +124,7 @@ export default {
       }
     },
     // 绘制棋子
-    drawPieces(context){
+    drawPieces(context, black, white){
       for(let i = 0; i < this.size; ++i)
       {
         for(let j = 0; j < this.size; ++j)
@@ -138,21 +133,18 @@ export default {
           {
             case 1:
               // 黑棋
-              var point = this.getPointXY(i, j);
-              var fillStyle = '#000';
+              var img = black;
               break;
             case 2:
               // 白棋
-              var point = this.getPointXY(i, j);
-              var fillStyle = '#fff';
+              var img = white;
               break;
             default:
               continue;
           }
-          context.beginPath();
-          context.fillStyle = fillStyle;
-          context.arc(point.x, point.y, 10, 0, 2 * Math.PI);
-          context.fill();
+          var point = this.getPointXY(i, j);
+          const pieceSize = 24;
+          context.drawImage(img, point.x - pieceSize / 2, point.y - pieceSize / 2, pieceSize, pieceSize)
         }
       }
     },
@@ -171,8 +163,6 @@ export default {
       }
       let x = Math.round((e.offsetX - this.canvasPadding) / this.cellWidth)
       let y = Math.round((e.offsetY - this.canvasPadding) / this.cellHeight)
-      console.log(x, y)
-      console.log(this.gobangMap)
       if(0 == this.gobangMap[x][y])
       {
         this.gobangMap[x][y] = this.currentPiece;

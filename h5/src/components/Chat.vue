@@ -48,7 +48,6 @@ export default {
       });
     });
     this.wsConn.onAction('im.receive', this.onReceive)
-    console.log(this.rows)
     this.chatContentStyle = 'height:' + (24 * this.rows + 20) + 'px';
   },
   beforeDestroy(){
