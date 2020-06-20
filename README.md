@@ -32,13 +32,20 @@ imi 框架交流群：17916227 [![点击加群](https://pub.idqqimg.com/wpa/imag
 
 **配置：**
 
-`config/config.php` 中可以改端口
+`config/config.php` 中可以改端口及数据库等配置
 
 **运行命令：**
 
 ```shell
 cd server
+
+# Composer 安装
 composer update
+
+# 导入数据数据库表结构
+vendor/bin/imi generate/table
+
+# 启动服务
 vendor/bin/imi server/start
 ```
 
