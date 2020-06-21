@@ -98,7 +98,7 @@ class RoomModel extends RedisModel
      * 
      * @Column
      *
-     * @var string
+     * @var array
      */
     protected $creator;
 
@@ -125,7 +125,7 @@ class RoomModel extends RedisModel
      * 
      * @Column
      *
-     * @var \ImiApp\Module\Member\Model\Member
+     * @var array
      */
     protected $player1;
 
@@ -134,7 +134,7 @@ class RoomModel extends RedisModel
      * 
      * @Column
      *
-     * @var \ImiApp\Module\Member\Model\Member
+     * @var array
      */
     protected $player2;
 
@@ -351,11 +351,11 @@ class RoomModel extends RedisModel
     /**
      * Get 创建者名称
      *
-     * @return string
+     * @return array
      */ 
     public function getCreator()
     {
-        return $this->memberService->get($this->creatorId);
+        return $this->memberService->get($this->creatorId)->toArray();
     }
 
     /**
@@ -390,21 +390,21 @@ class RoomModel extends RedisModel
     /**
      * Get 玩家1信息
      *
-     * @return \ImiApp\Module\Member\Model\Member
+     * @return array
      */ 
     public function getPlayer1()
     {
-        return $this->playerId1 > 0 ? $this->memberService->get($this->playerId1) : null;
+        return $this->playerId1 > 0 ? $this->memberService->get($this->playerId1)->toArray() : null;
     }
 
     /**
      * Get 玩家2信息
      *
-     * @return \ImiApp\Module\Member\Model\Member
+     * @return array
      */ 
     public function getPlayer2()
     {
-        return $this->playerId2 > 0 ? $this->memberService->get($this->playerId2) : null;
+        return $this->playerId2 > 0 ? $this->memberService->get($this->playerId2)->toArray() : null;
     }
 
     /**
