@@ -52,43 +52,45 @@ class GobangLogic
      */
     public function go(int $roomId, int $memberId, int $x, int $y)
     {
-        $game = $this->gobangService->go($roomId, $memberId, $x, $y);
-        $data = [];
-        $winner = $game->referee($x, $y);
-        if(GobangCell::NONE === $winner)
-        {
-            $data['winner'] = null;
-        }
-        else
-        {
-            $room = $this->roomService->getInfo($roomId);
-            if($winner === $game->getPlayer1Color())
+        return $this->roomService->lock($roomId, function() use($roomId, $memberId, $x, $y){
+            $game = $this->gobangService->go($roomId, $memberId, $x, $y);
+            $data = [];
+            $winner = $game->referee($x, $y);
+            if(GobangCell::NONE === $winner)
             {
-                $winnerMemberId = $room->getPlayerId1();
-            }
-            else if($winner === $game->getPlayer2Color())
-            {
-                $winnerMemberId = $room->getPlayerId2();
+                $data['winner'] = null;
             }
             else
             {
-                throw new BusinessException('数据错误');
+                $room = $this->roomService->getInfo($roomId);
+                if($winner === $game->getPlayer1Color())
+                {
+                    $winnerMemberId = $room->getPlayerId1();
+                }
+                else if($winner === $game->getPlayer2Color())
+                {
+                    $winnerMemberId = $room->getPlayerId2();
+                }
+                else
+                {
+                    throw new BusinessException('数据错误');
+                }
+                $room->setPlayer1Ready(false);
+                $room->setPlayer2Ready(false);
+                $room->setStatus(GobangStatus::WAIT_START);
+                $room->save();
+                $data['winner'] = $this->memberService->get($winnerMemberId);
+                defer(function() use($roomId, $room){
+                    $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
+                        'roomInfo'  =>  $room,
+                    ]);
+                });
             }
-            $room->setPlayer1Ready(false);
-            $room->setPlayer2Ready(false);
-            $room->setStatus(GobangStatus::WAIT_START);
-            $room->save();
-            $data['winner'] = $this->memberService->get($winnerMemberId);
-            defer(function() use($roomId, $room){
-                $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
-                    'roomInfo'  =>  $room,
-                ]);
-            });
-        }
-        // 棋盘
-        // $data['map'] = $game->getGobangMap();
-        $data['game'] = $game;
-        $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, $data);
+            // 棋盘
+            // $data['map'] = $game->getGobangMap();
+            $data['game'] = $game;
+            $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, $data);
+        });
     }
 
 }
