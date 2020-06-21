@@ -28,7 +28,7 @@ class OnClose implements ICloseEventListener
     {
         /** @var \Imi\Server\Http\Route\RouteResult $httpRouteResult */
         $httpRouteResult = ConnectContext::get('httpRouteResult');
-        if('/ws' === ($httpRouteResult->routeItem->annotation ?? null))
+        if('/ws' === ($httpRouteResult->routeItem->annotation->url ?? null))
         {
             $memberId = ConnectContext::get('memberId');
             if($memberId)
