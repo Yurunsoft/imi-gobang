@@ -5,8 +5,9 @@ use Imi\Config;
 use Imi\Redis\Redis;
 use Imi\Bean\Annotation\Bean;
 use ImiApp\Exception\BusinessException;
-use ImiApp\Module\Gobang\Enum\GobangStatus;
+use ImiApp\Exception\NotFoundException;
 use ImiApp\Module\Gobang\Model\RoomModel;
+use ImiApp\Module\Gobang\Enum\GobangStatus;
 
 /**
  * @Bean("RoomService")
@@ -25,7 +26,7 @@ class RoomService
         ]);
         if(!$record)
         {
-            throw new BusinessException('房间不存在');
+            throw new NotFoundException('房间不存在');
         }
         return $record;
     }

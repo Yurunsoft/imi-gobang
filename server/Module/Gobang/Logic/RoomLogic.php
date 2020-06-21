@@ -4,12 +4,13 @@ namespace ImiApp\Module\Gobang\Logic;
 use Imi\Redis\Redis;
 use Imi\Server\Server;
 use Imi\ConnectContext;
+use Imi\RequestContext;
 use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
-use Imi\RequestContext;
 use ImiApp\Exception\BusinessException;
-use ImiApp\Module\Gobang\Enum\GobangStatus;
+use ImiApp\Exception\NotFoundException;
 use ImiApp\Module\Gobang\Model\RoomModel;
+use ImiApp\Module\Gobang\Enum\GobangStatus;
 use ImiApp\Module\Gobang\Enum\MessageActions;
 
 /**
@@ -196,6 +197,12 @@ class RoomLogic
             {
                 $isDestoryRoom = true;
                 $room->delete();
+                try {
+                    $game = $this->gobangService->getByRoomId($roomId);
+                    $game->delete();
+                } catch(NotFoundException $ne) {
+
+                }
                 return;
             }
             if(GobangStatus::GAMING === $room->getStatus())

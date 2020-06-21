@@ -4,6 +4,7 @@ namespace ImiApp\Module\Gobang\Service;
 use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
 use ImiApp\Exception\BusinessException;
+use ImiApp\Exception\NotFoundException;
 use ImiApp\Module\Gobang\Enum\GobangCell;
 use ImiApp\Module\Gobang\Model\GobangGameModel;
 
@@ -32,7 +33,7 @@ class GobangService
         ]);
         if(!$record)
         {
-            throw new BusinessException('战局不存在');
+            throw new NotFoundException('战局不存在');
         }
         return $record;
     }
