@@ -243,7 +243,10 @@ export default {
         this.playerMine.playerId = this.roomInfo.playerId2;
         this.playerOther.playerId = this.roomInfo.playerId1;
 
-        this.playerMine.username = this.roomInfo.player2.username;
+        if(this.roomInfo.player2)
+        {
+          this.playerMine.username = this.roomInfo.player2.username;
+        }
         if(this.roomInfo.player1)
         {
           this.playerOther.username = this.roomInfo.player1.username;

@@ -9,7 +9,11 @@ Vue.prototype.GLOBAL = global
 
 if(window.localStorage['userInfo'])
 {
-  global.userInfo = JSON.parse(window.localStorage['userInfo'])
+  try {
+    global.userInfo = JSON.parse(window.localStorage['userInfo'])
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 new Vue({
