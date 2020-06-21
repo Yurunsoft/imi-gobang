@@ -117,6 +117,7 @@ class RoomLogic
      */
     public function join(int $memberId, int $roomId): RoomModel
     {
+        /** @var \ImiApp\Module\Gobang\Model\RoomModel $room */
         $room = null;
         $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room){
             $room = $this->roomService->join($memberId, $roomId);
@@ -144,18 +145,33 @@ class RoomLogic
      */
     public function watch(int $memberId, int $roomId): RoomModel
     {
+        /** @var \ImiApp\Module\Gobang\Model\RoomModel $room */
         $room = null;
         $this->roomService->lock($roomId, function() use($memberId, $roomId, &$room){
             $room = $this->roomService->watch($memberId, $roomId);
         });
         ConnectContext::set('roomId', $roomId);
+        if(GobangStatus::GAMING === $room->getStatus())
+        {
+            $game = $this->gobangService->getByRoomId($roomId);
+        }
+        else
+        {
+            $game = null;
+        }
         // 加入房间分组
         RequestContext::getServer()->joinGroup('room:' . $roomId, RequestContext::get('fd'));
-        defer(function() use($roomId, $room){
+        defer(function() use($roomId, $room, $game){
             $this->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
                 'roomInfo'  =>  $room,
                 // 'content'   =>  sprintf('%s 进入观战', $member->name),
             ]);
+            if($game)
+            {
+                $this->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, [
+                    'game'  =>  $game,
+                ]);
+            }
             // 推送房间列表
             $this->pushRooms();
         });
