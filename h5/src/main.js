@@ -7,7 +7,10 @@ Vue.config.productionTip = false
 
 Vue.prototype.GLOBAL = global
 
-global.userInfo = window.localStorage['userInfo']
+if(window.localStorage['userInfo'])
+{
+  global.userInfo = JSON.parse(window.localStorage['userInfo'])
+}
 
 new Vue({
   router,
