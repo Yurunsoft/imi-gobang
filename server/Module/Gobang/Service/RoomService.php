@@ -102,10 +102,12 @@ class RoomService
         if($memberId === $room->getPlayerId1())
         {
             $room->setPlayerId1(0);
+            $room->setPlayer1Ready(false);
         }
         else if($memberId === $room->getPlayerId2())
         {
             $room->setPlayerId2(0);
+            $room->setPlayer2Ready(false);
         }
         else
         {
