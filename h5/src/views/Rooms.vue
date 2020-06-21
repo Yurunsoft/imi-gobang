@@ -14,7 +14,7 @@
     <ul class="room-list">
       <li v-for="(item, index) in rooms" :key="index">
         <div>
-          <span class="title">{{item.title}}</span>
+          <span class="title">[item.statusText]{{item.title}}</span>
         </div>
 
         <div class="username">房主：{{item.creator.username}}</div>
