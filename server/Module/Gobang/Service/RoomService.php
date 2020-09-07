@@ -85,7 +85,7 @@ class RoomService
     {
         $room = $this->getInfo($roomId);
         $memberIds = &$room->getWatchMemberIds();
-        $memberIds[] = $roomId;
+        $memberIds[] = $memberId;
         $room->save();
         return $room;
     }
