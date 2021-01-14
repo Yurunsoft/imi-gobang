@@ -113,7 +113,7 @@ class RoomService
         else
         {
             $watchMemberIds = &$room->getWatchMemberIds();
-            if(false !== ($index = array_search($memberId, $watchMemberIds)))
+            if(false === ($index = array_search($memberId, $watchMemberIds)))
             {
                 throw new BusinessException('玩家已不在房间');
             }
