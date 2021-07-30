@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ImiApp\Module\Gobang\Logic;
 
-use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
+use Imi\Bean\Annotation\Bean;
 use ImiApp\Exception\BusinessException;
 use ImiApp\Module\Gobang\Enum\GobangCell;
 use ImiApp\Module\Gobang\Enum\GobangStatus;
@@ -42,32 +45,28 @@ class GobangLogic
     protected $memberService;
 
     /**
-     * 落子
+     * 落子.
      *
-     * @param integer $roomId
-     * @param integer $memberId
-     * @param integer $x
-     * @param integer $y
      * @return void
      */
     public function go(int $roomId, int $memberId, int $x, int $y)
     {
-        return $this->roomService->lock($roomId, function() use($roomId, $memberId, $x, $y){
+        return $this->roomService->lock($roomId, function () use ($roomId, $memberId, $x, $y) {
             $game = $this->gobangService->go($roomId, $memberId, $x, $y);
             $data = [];
             $winner = $game->referee($x, $y);
-            if(GobangCell::NONE === $winner)
+            if (GobangCell::NONE === $winner)
             {
                 $data['winner'] = null;
             }
             else
             {
                 $room = $this->roomService->getInfo($roomId);
-                if($winner === $game->getPlayer1Color())
+                if ($winner === $game->getPlayer1Color())
                 {
                     $winnerMemberId = $room->getPlayerId1();
                 }
-                else if($winner === $game->getPlayer2Color())
+                elseif ($winner === $game->getPlayer2Color())
                 {
                     $winnerMemberId = $room->getPlayerId2();
                 }
@@ -80,11 +79,9 @@ class GobangLogic
                 $room->setStatus(GobangStatus::WAIT_START);
                 $room->save();
                 $data['winner'] = $this->memberService->get($winnerMemberId);
-                defer(function() use($roomId, $room){
-                    $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
-                        'roomInfo'  =>  $room,
-                    ]);
-                });
+                $this->roomLogic->pushRoomMessage($roomId, MessageActions::ROOM_INFO, [
+                    'roomInfo'  => $room,
+                ]);
             }
             // 棋盘
             // $data['map'] = $game->getGobangMap();
@@ -92,5 +89,4 @@ class GobangLogic
             $this->roomLogic->pushRoomMessage($roomId, MessageActions::GOBANG_INFO, $data);
         });
     }
-
 }

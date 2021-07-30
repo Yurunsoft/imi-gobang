@@ -1,9 +1,10 @@
 <?php
+
 namespace ImiApp\Module\Member\Service;
 
-use Imi\Bean\Annotation\Bean;
 use Imi\Aop\Annotation\Inject;
-use Imi\ConnectContext;
+use Imi\Bean\Annotation\Bean;
+use Imi\ConnectionContext;
 use Imi\RequestContext;
 use Imi\Server\Session\Session;
 
@@ -20,23 +21,23 @@ class MemberSessionService
     protected $memberService;
 
     /**
-     * 用户ID
+     * 用户ID.
      *
      * @var int
      */
     protected $memberId;
 
     /**
-     * 用户信息
+     * 用户信息.
      *
      * @var \ImiApp\Module\Member\Model\Member
      */
     protected $memberInfo;
 
     /**
-     * 是否登录
+     * 是否登录.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isLogin = false;
 
@@ -46,26 +47,21 @@ class MemberSessionService
     }
 
     /**
-     * 初始化
+     * 初始化.
      *
      * @return void
      */
     public function init()
     {
-        if($fd = RequestContext::get('fd'))
-        {
-            $memberId = ConnectContext::get('memberId', null, $fd);
-        }
-        else
-        {
+        if ($fd = RequestContext::get('clientId')) {
+            $memberId = ConnectionContext::get('memberId', null, $fd);
+        } else {
             $memberId = false;
         }
-        if(!$memberId)
-        {
+        if (! $memberId) {
             $memberId = Session::get('memberId');
         }
-        if(!$memberId)
-        {
+        if (! $memberId) {
             return;
         }
         $this->memberId = $memberId;
@@ -73,9 +69,9 @@ class MemberSessionService
     }
 
     /**
-     * 是否登录
+     * 是否登录.
      *
-     * @return boolean
+     * @return bool
      */
     public function isLogin()
     {
@@ -83,27 +79,26 @@ class MemberSessionService
     }
 
     /**
-     * Get 用户信息
+     * Get 用户信息.
      *
      * @return \ImiApp\Module\Member\Model\Member
-     */ 
+     */
     public function getMemberInfo()
     {
-        if(!$this->memberInfo)
-        {
+        if (! $this->memberInfo && $this->memberId > 0) {
             $this->memberInfo = $this->memberService->get($this->memberId);
         }
+
         return $this->memberInfo;
     }
 
     /**
-     * Get 用户ID
+     * Get 用户ID.
      *
      * @return int
-     */ 
+     */
     public function getMemberId()
     {
         return $this->memberId;
     }
-
 }

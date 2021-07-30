@@ -1,23 +1,24 @@
 <?php
+
 namespace ImiApp\MainServer\WebSocketController;
 
-use Imi\Controller\WebSocketController;
-use Imi\Server\Route\Annotation\WebSocket\WSRoute;
-use Imi\Server\Route\Annotation\WebSocket\WSAction;
-use Imi\Server\Route\Annotation\WebSocket\WSController;
+use Imi\Server\WebSocket\Controller\WebSocketController;
+use Imi\Server\WebSocket\Route\Annotation\WSAction;
+use Imi\Server\WebSocket\Route\Annotation\WSController;
+use Imi\Server\WebSocket\Route\Annotation\WSRoute;
 
 /**
- * 公共控制器
+ * 公共控制器.
  * @WSController
  */
 class PublicController extends WebSocketController
 {
     /**
-     * ping
+     * ping.
      *
      * @WSAction
      * @WSRoute({"action"="ping"})
-     * 
+     *
      * @param array $data
      * @return void
      */
@@ -27,5 +28,4 @@ class PublicController extends WebSocketController
             'action'    =>  'pong',
         ];
     }
-
 }

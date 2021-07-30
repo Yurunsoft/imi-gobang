@@ -3,10 +3,14 @@
     "type": "project",
     "description": "imi 框架的 WebSocket Server 项目。https://imiphp.com",
 	"require": {
-		"yurunsoft/imi": "~1.0"
+        "php": ">=7.4",
+        "imiphp/imi": "2.0.x-dev",
+        "imiphp/imi-swoole": "2.0.x-dev",
+        "imiphp/imi-workerman": "2.0.x-dev"
     },
     "require-dev": {
-        "yurunsoft/ide-helper": "~1.0"
+        "yurunsoft/ide-helper": "~1.0",
+        "swoole/ide-helper": "^4.6"
     },
     "autoload": {
         "psr-4" : {
@@ -16,7 +20,6 @@
     "extra": {
         "ide-helper": {
             "list": [
-                "swoole",
                 "redis"
             ]
         }

@@ -1,16 +1,22 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ImiApp\Module\Gobang\Listener;
 
-use Imi\ConnectContext;
 use Imi\Aop\Annotation\Inject;
 use Imi\Bean\Annotation\ClassEventListener;
-use Imi\Server\Event\Param\CloseEventParam;
-use Imi\Server\Event\Listener\ICloseEventListener;
+use Imi\Bean\Annotation\Listener;
+use Imi\ConnectionContext;
+use Imi\Event\EventParam;
+use Imi\Event\IEventListener;
+use Imi\Util\Uri;
 
 /**
- * @ClassEventListener(className="Imi\Server\WebSocket\Server", eventName="close")
+ * @ClassEventListener(className="Imi\Swoole\Server\WebSocket\Server", eventName="close")
+ * @Listener("IMI.WORKERMAN.SERVER.CLOSE")
  */
-class OnClose implements ICloseEventListener
+class OnClose implements IEventListener
 {
     /**
      * @Inject("RoomLogic")
@@ -20,22 +26,18 @@ class OnClose implements ICloseEventListener
     protected $roomLogic;
 
     /**
-     * 事件处理方法
-     * @param CloseEventParam $e
-     * @return void
+     * 事件处理方法.
      */
-    public function handle(CloseEventParam $e)
+    public function handle(EventParam $e): void
     {
-        /** @var \Imi\Server\Http\Route\RouteResult $httpRouteResult */
-        $httpRouteResult = ConnectContext::get('httpRouteResult');
-        if('/ws' === ($httpRouteResult->routeItem->annotation->url ?? null))
+        $uri = new Uri(ConnectionContext::get('uri'));
+        if ('/ws' === $uri->getPath())
         {
-            $memberId = ConnectContext::get('memberId');
-            if($memberId)
+            $memberId = ConnectionContext::get('memberId');
+            if ($memberId)
             {
                 $this->roomLogic->onMemberClose($memberId);
             }
         }
     }
-
 }

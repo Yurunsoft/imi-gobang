@@ -1,22 +1,23 @@
 <?php
+
 namespace ImiApp\Module\Member\ApiController;
 
-use Imi\RequestContext;
 use Imi\Aop\Annotation\Inject;
-use Imi\Server\Session\Session;
-use Imi\Validate\Annotation\Text;
-use Imi\Validate\Annotation\Required;
-use Imi\Server\Route\Annotation\Route;
-use Imi\Server\Route\Annotation\Action;
-use Imi\Controller\SingletonHttpController;
-use Imi\Server\Route\Annotation\Controller;
 use Imi\HttpValidate\Annotation\HttpValidation;
+use Imi\RequestContext;
+use Imi\Server\Http\Controller\HttpController;
+use Imi\Server\Http\Route\Annotation\Action;
+use Imi\Server\Http\Route\Annotation\Controller;
+use Imi\Server\Http\Route\Annotation\Route;
+use Imi\Server\Session\Session;
+use Imi\Validate\Annotation\Required;
+use Imi\Validate\Annotation\Text;
 use ImiApp\Module\Member\Annotation\LoginRequired;
 
 /**
  * @Controller("/member/")
  */
-class MemberController extends SingletonHttpController
+class MemberController extends HttpController
 {
     /**
      * @Inject("MemberService")
@@ -26,17 +27,17 @@ class MemberController extends SingletonHttpController
     protected $memberService;
 
     /**
-     * 注册
+     * 注册.
      *
      * @Action
      * @Route(method="POST")
-     * 
+     *
      * @HttpValidation
      * @Required(name="username", message="用户名不能为空")
-     * @Text(name="username", min="1", message="用户名不能为空")
+     * @Text(name="username", min=1, message="用户名不能为空")
      * @Required(name="password", message="密码不能为空")
-     * @Text(name="password", min="1", message="密码不能为空")
-     * 
+     * @Text(name="password", min=1, message="密码不能为空")
+     *
      * @param string $username
      * @param string $password
      * @return void
@@ -47,17 +48,17 @@ class MemberController extends SingletonHttpController
     }
 
     /**
-     * 登录
+     * 登录.
      *
      * @Action
      * @Route(method="POST")
-     * 
+     *
      * @HttpValidation
      * @Required(name="username", message="用户名不能为空")
-     * @Text(name="username", min="1", message="用户名不能为空")
+     * @Text(name="username", min=1, message="用户名不能为空")
      * @Required(name="password", message="密码不能为空")
-     * @Text(name="password", min="1", message="密码不能为空")
-     * 
+     * @Text(name="password", min=1, message="密码不能为空")
+     *
      * @param string $username
      * @param string $password
      * @return void
@@ -65,6 +66,7 @@ class MemberController extends SingletonHttpController
     public function login(string $username, string $password)
     {
         $this->memberService->login($username, $password);
+
         return [
             'token' =>  Session::getID(),
         ];
@@ -82,9 +84,9 @@ class MemberController extends SingletonHttpController
     {
         /** @var \ImiApp\Module\Member\Service\MemberSessionService $memberSession */
         $memberSession = RequestContext::getBean('MemberSessionService');
+
         return [
             'data'  =>  $memberSession->getMemberInfo(),
         ];
     }
-
 }

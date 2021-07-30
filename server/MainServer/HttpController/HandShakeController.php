@@ -1,18 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ImiApp\MainServer\HttpController;
 
-use Imi\ConnectContext;
+use Imi\ConnectionContext;
 use Imi\RequestContext;
-use Imi\Controller\HttpController;
+use Imi\Server\Http\Controller\HttpController;
+use Imi\Server\Http\Route\Annotation\Action;
+use Imi\Server\Http\Route\Annotation\Controller;
+use Imi\Server\Http\Route\Annotation\Route;
+use Imi\Server\Server;
 use Imi\Server\View\Annotation\View;
-use Imi\Server\Route\Annotation\Route;
-use Imi\Server\Route\Annotation\Action;
-use Imi\Server\Route\Annotation\Controller;
+use Imi\Server\WebSocket\Route\Annotation\WSConfig;
 use ImiApp\Module\Member\Annotation\LoginRequired;
-use Imi\Server\Route\Annotation\WebSocket\WSConfig;
 
 /**
- * 测试
+ * 测试.
+ *
  * @Controller
  * @View(renderType="html")
  */
@@ -21,9 +26,10 @@ class HandShakeController extends HttpController
     /**
      * @Action
      * @LoginRequired
-     * 
+     *
      * @Route("/ws")
      * @WSConfig(parserClass=\Imi\Server\DataParser\JsonArrayParser::class)
+     *
      * @return void
      */
     public function ws()
@@ -32,21 +38,24 @@ class HandShakeController extends HttpController
         /** @var \ImiApp\Module\Member\Service\MemberSessionService $memberSession */
         $memberSession = RequestContext::getBean('MemberSessionService');
         $memberId = $memberSession->getMemberId();
-        ConnectContext::set('memberId', $memberId);
+        ConnectionContext::set('memberId', $memberId);
         $flag = 'ws-' . $memberId;
-        $currentFd = $this->request->getSwooleRequest()->fd;
-        if(!ConnectContext::bindNx($flag, $currentFd))
+        $currentFd = ConnectionContext::getClientId();
+        if (!ConnectionContext::bindNx($flag, $currentFd))
         {
-            $fd = ConnectContext::getFdByFlag($flag);
-            if($fd)
+            $fds = ConnectionContext::getClientIdByFlag($flag);
+            if ($fds)
             {
-                $this->request->getServerInstance()->getSwooleServer()->close($fd);
+                foreach ($fds as $fd)
+                {
+                    ConnectionContext::unbind($flag, $fd);
+                }
+                Server::close($fds);
             }
-            if(!ConnectContext::bindNx($flag, $currentFd))
+            if (!ConnectionContext::bindNx($flag, $currentFd))
             {
-                $this->request->getServerInstance()->getSwooleServer()->close($currentFd);
+                Server::close($currentFd);
             }
         }
     }
-
 }
