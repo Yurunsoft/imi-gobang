@@ -18,10 +18,6 @@ Http:<http://127.0.0.1:8081/>、<http://127.0.0.1:8081/api>
 
 * 在本项目目录中，执行命令：`composer update`
 
-### 方法二
-
-* `composer create-project imiphp/project-websocket 2.0.x-dev`
-
 ## 启动命令
 
 Swoole：`vendor/bin/imi-swoole swoole/start`

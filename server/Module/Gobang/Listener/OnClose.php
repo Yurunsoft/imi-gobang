@@ -30,7 +30,12 @@ class OnClose implements IEventListener
      */
     public function handle(EventParam $e): void
     {
-        $uri = new Uri(ConnectionContext::get('uri'));
+        $uri = ConnectionContext::get('uri');
+        if (null === $uri)
+        {
+            return;
+        }
+        $uri = new Uri($uri);
         if ('/ws' === $uri->getPath())
         {
             $memberId = ConnectionContext::get('memberId');
