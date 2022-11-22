@@ -14,7 +14,7 @@
     "websocket-extensions": "^0.1.4"
   },
   "devDependencies": {
-    "@vue/cli-service": "^3.12.0",
+    "@vue/cli-service": "^5.0.8",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "vue-template-compiler": "^2.6.10"
